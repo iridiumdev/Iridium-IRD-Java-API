@@ -5,8 +5,11 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class WalletdResponse<T> extends WalletdRPCModel {
+public class WalletdResponse<T> extends AbstractResponse<T,T>{
 
-    private T result;
+    @Override
+    public T unwrap() {
+        return this.getResult();
+    }
 
 }

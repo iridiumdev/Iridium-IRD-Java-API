@@ -1,30 +1,25 @@
 package cash.ird.walletd.rpc;
 
 import cash.ird.walletd.rpc.method.RequestMethod;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Map;
+import java.util.UUID;
 
 @RequiredArgsConstructor(staticName = "of")
 @Data
-@EqualsAndHashCode(callSuper = true)
-public class WalletdRequest extends WalletdRPCModel{
+public class WalletdRequest{
+
+    private String jsonrpc = "2.0";
+
+    private String id = UUID.randomUUID().toString();
 
     @NonNull
-    @JsonIgnore
-    private RequestMethod requestMethod;
+    private RequestMethod method;
 
     @NonNull
     private Map<String, Object> params;
-
-    @JsonProperty("method")
-    public String getMethod() {
-        return this.requestMethod.getName();
-    }
 
 }

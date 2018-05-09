@@ -5,12 +5,12 @@ import lombok.Data;
 @Data
 public class Status {
 
-    private int peerCount;
+    private long peerCount;
 
-    private int blockCount;
+    private long blockCount;
 
     private String lastBlockHash;
 
-    private int knownBlockCount;
+    private long knownBlockCount;
 
 }
