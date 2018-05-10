@@ -3,6 +3,9 @@ package cash.ird.walletd
 import cash.ird.walletd.model.body.Balance
 import cash.ird.walletd.model.body.SpendKeyPair
 import cash.ird.walletd.model.body.Status
+import cash.ird.walletd.model.body.TxHashBag
+import cash.ird.walletd.model.request.BlockHashRange
+import cash.ird.walletd.model.request.BlockIndexRange
 import cash.ird.walletd.model.request.PrivateKey
 import cash.ird.walletd.model.request.PublicKey
 import cash.ird.walletd.rpc.exception.IridiumWalletdException
@@ -13,15 +16,16 @@ class IridiumClientTest extends Specification {
     //todo change tests to run against a mocked http json api instead of the real walletd
 
     private IridiumAPI sut
+    private String baseAddress = "ir3iQYmVZ843gcJdZ2xEPnfCyF5wAmP6wQU6W8QdE3ieGKujPFWy7D5PVnZ2YtQcvs8EBhPfy79SVL4ZPvHebcqQ1WAGsLaMV"
     private String testAddress1
     private String testAddress2
     private String testAddress3
 
     void setup() {
         sut = new IridiumClient()
-        testAddress1 = sut.createAddress()
-        testAddress2 = sut.createAddress()
-        testAddress3 = sut.createAddress()
+        //testAddress1 = sut.createAddress()
+        //testAddress2 = sut.createAddress()
+        //testAddress3 = sut.createAddress()
     }
 
 
@@ -35,7 +39,6 @@ class IridiumClientTest extends Specification {
 
     def "Reset with viewSecretKey"() {
         given:
-        String address = sut.createAddress()
         String viewKey = sut.getViewKey()
 
         when:
@@ -92,7 +95,7 @@ class IridiumClientTest extends Specification {
         keyPair.getSecretKey() != null
     }
 
-    def "getAddresses"() {
+    def "GetAddresses"() {
         when:
         List<String> addresses = sut.getAddresses()
 
@@ -140,28 +143,93 @@ class IridiumClientTest extends Specification {
 
         then:
         balance
-        balance.availableBalance == 0
-        balance.lockedAmount == 0
+        balance.availableBalance >= 0
+        balance.lockedAmount >= 0
     }
 
     def "GetBalance with address"() {
+        setup:
+        String address = sut.createAddress()
         when:
-        Balance balance = sut.getBalance(testAddress1)
+        Balance balance = sut.getBalance(address)
 
         then:
-        //todo  adjust test to check for > 0 if the testAddress1 is going to hold some in the CI setup
         balance
         balance.availableBalance == 0
         balance.lockedAmount == 0
     }
 
+    def "GetBalance with baseAddress"() {
+        when:
+        Balance balance = sut.getBalance(baseAddress)
+
+        then:
+        balance
+        balance.availableBalance > 0
+        balance.lockedAmount >= 0
+    }
+
 
     def "GetBlockHashes"() {
         when:
-        List<String> blockHashes = sut.getBlockHashes(0, 1000)
+        List<String> blockHashes = sut.getBlockHashes(BlockIndexRange.of(0, 1))
 
         then:
         !blockHashes.isEmpty()
+        blockHashes.size() == 1
+    }
+
+    def "GetTransactionHashes with BlockIndexRange"() {
+        when:
+        List<TxHashBag> hashBags = sut.getTransactionHashes(BlockIndexRange.of(0, 150))
+
+        then:
+        !hashBags.isEmpty()
+    }
+
+    def "GetTransactionHashes with BlockHashRange"() {
+        setup:
+        String firstBlockHash = sut.getBlockHashes(BlockIndexRange.of(0,1)).first()
+        when:
+        List<TxHashBag> hashBags = sut.getTransactionHashes(BlockHashRange.of(firstBlockHash, 150))
+
+        then:
+        !hashBags.isEmpty()
+        !hashBags.first().transactionHashes.isEmpty()
+    }
+
+    def "GetTransactionHashes with BlockHashRange and addresses"() {
+        setup:
+        String firstBlockHash = sut.getBlockHashes(BlockIndexRange.of(0,1)).first()
+        List<String> addresses = [sut.createAddress()]
+        when:
+        List<TxHashBag> hashBags = sut.getTransactionHashes(BlockHashRange.of(firstBlockHash, 150), addresses)
+
+        then:
+        !hashBags.isEmpty()
+        hashBags.first().transactionHashes.isEmpty()
+    }
+
+    def "GetTransactionHashes with BlockIndexRange and addresses and paymentId"() {
+        setup:
+        String firstBlockHash = sut.getBlockHashes(BlockIndexRange.of(0,1)).first()
+        List<String> addresses = [sut.createAddress()]
+        String paymentId = generatePaymentId()
+        when:
+        List<TxHashBag> hashBags = sut.getTransactionHashes(BlockIndexRange.of(0,150), addresses, paymentId)
+
+        then:
+        !hashBags.isEmpty()
+        hashBags.first().transactionHashes.isEmpty()
+    }
+
+
+    private static String generatePaymentId(){
+        def r = new Random()
+        def result = (0..<64).collect { r.nextInt(16) }
+                .collect { Integer.toString(it, 16) }
+                .join()
+        return result
     }
 
 }

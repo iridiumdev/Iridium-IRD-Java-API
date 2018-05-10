@@ -2,6 +2,8 @@ package cash.ird.walletd;
 
 
 import cash.ird.walletd.model.body.*;
+import cash.ird.walletd.model.request.BlockIndexRange;
+import cash.ird.walletd.model.request.BlockRange;
 import cash.ird.walletd.model.request.Key;
 import cash.ird.walletd.model.request.PrivateKey;
 import cash.ird.walletd.model.response.*;
@@ -102,6 +104,8 @@ public class IridiumClient implements IridiumAPI {
 
         if (address != null) {
             params.put("address", address);
+        } else {
+            throw new IllegalArgumentException("address must not be null!");
         }
 
         return this.walletdClient.doRequest(RequestMethod.DELETE_ADDRESS, Collections.unmodifiableMap(params), NoopResponse.class) != null;
@@ -124,33 +128,79 @@ public class IridiumClient implements IridiumAPI {
     }
 
     @Override
-    public List<String> getBlockHashes(long firstBlockIndex, long blockCount) throws IridiumWalletdException {
+    public List<String> getBlockHashes(BlockIndexRange blockIndexRange) throws IridiumWalletdException {
         Map<String, Object> params = buildParams();
-        params.put("firstBlockIndex", firstBlockIndex);
-        params.put("blockCount", blockCount);
+        params.put("firstBlockIndex", blockIndexRange.getStart());
+        params.put("blockCount", blockIndexRange.getCount());
 
         return this.walletdClient.doRequest(RequestMethod.GET_BLOCK_HASHES, Collections.unmodifiableMap(params), BlockHashListResponse.class);
     }
 
     @Override
-    public List<TxHashBag> getTransactionHashes(String blockHash, long blockCount, List<String> addresses, String paymentId) throws IridiumWalletdException {
-        return null;
+    public <T extends BlockRange> List<TxHashBag> getTransactionHashes(T blockRange) throws IridiumWalletdException {
+        return this.getTransactionHashes(blockRange, null, null);
     }
 
     @Override
-    public List<TxHashBag> getTransactionHashes(long firstBlockIndex, long blockCount, List<String> addresses, String paymentId) throws IridiumWalletdException {
-        return null;
+    public <T extends BlockRange> List<TxHashBag> getTransactionHashes(T blockRange, List<String> addresses) throws IridiumWalletdException {
+        return this.getTransactionHashes(blockRange, addresses, null);
     }
 
     @Override
-    public List<TxItemBag> getTransactions(String blockHash, long blockCount, List<String> addresses, String paymentId) throws IridiumWalletdException {
-        return null;
+    public <T extends BlockRange> List<TxHashBag> getTransactionHashes(T blockRange, List<String> addresses, String paymentId) throws IridiumWalletdException {
+        Map<String, Object> params = buildParams();
+
+        if (blockRange != null) {
+            params.put(blockRange.getType().getParamName(), blockRange.getStart());
+            params.put("blockCount", blockRange.getCount());
+        } else {
+            throw new IllegalArgumentException("blockRange must not be null!");
+        }
+
+        if (addresses != null && !addresses.isEmpty()) {
+            params.put("addresses", addresses);
+        }
+
+        if (paymentId != null) {
+            params.put("paymentId", paymentId);
+        }
+
+        return this.walletdClient.doRequest(RequestMethod.GET_TRANSACTION_HASHES, Collections.unmodifiableMap(params), TxHashBagListResponse.class);
+    }
+
+
+    @Override
+    public <T extends  BlockRange> List<TxItemBag> getTransactions(T blockRange) throws IridiumWalletdException {
+        return this.getTransactions(blockRange, null, null);
     }
 
     @Override
-    public List<TxItemBag> getTransactions(long firstBlockIndex, long blockCount, List<String> addresses, String paymentId) throws IridiumWalletdException {
-        return null;
+    public <T extends  BlockRange> List<TxItemBag> getTransactions(T blockRange, List<String> addresses) throws IridiumWalletdException {
+        return this.getTransactions(blockRange, addresses, null);
     }
+
+    @Override
+    public <T extends  BlockRange> List<TxItemBag> getTransactions(T blockRange, List<String> addresses, String paymentId) throws IridiumWalletdException {
+        Map<String, Object> params = buildParams();
+
+        if (blockRange != null) {
+            params.put(blockRange.getType().getParamName(), blockRange.getStart());
+            params.put("blockCount", blockRange.getCount());
+        } else {
+            throw new IllegalArgumentException("blockRange must not be null!");
+        }
+
+        if (addresses != null && !addresses.isEmpty()) {
+            params.put("addresses", addresses);
+        }
+
+        if (paymentId != null) {
+            params.put("paymentId", paymentId);
+        }
+
+        return this.walletdClient.doRequest(RequestMethod.GET_TRANSACTIONS, Collections.unmodifiableMap(params), TxItemBagListResponse.class);
+    }
+
 
     @Override
     public List<String> getUnconfirmedTransactionHashes(List<String> addresses) throws IridiumWalletdException {

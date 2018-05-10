@@ -1,6 +1,8 @@
 package cash.ird.walletd;
 
 import cash.ird.walletd.model.body.*;
+import cash.ird.walletd.model.request.BlockIndexRange;
+import cash.ird.walletd.model.request.BlockRange;
 import cash.ird.walletd.model.request.Key;
 import cash.ird.walletd.rpc.exception.IridiumWalletdException;
 
@@ -12,35 +14,53 @@ public interface IridiumAPI {
 
     boolean reset(String viewSecretKey) throws IridiumWalletdException;
 
+
     boolean save() throws IridiumWalletdException;
+
 
     String getViewKey() throws IridiumWalletdException;
 
+
     SpendKeyPair getSpendKeys(String address) throws IridiumWalletdException;
+
 
     Status getStatus() throws IridiumWalletdException;
 
+
     List<String> getAddresses() throws IridiumWalletdException;
+
 
     String createAddress() throws IridiumWalletdException;
 
     String createAddress(Key key) throws IridiumWalletdException;
 
+
     boolean deleteAddress(String address) throws IridiumWalletdException;
+
 
     Balance getBalance() throws IridiumWalletdException;
 
+
     Balance getBalance(String address) throws IridiumWalletdException;
 
-    List<String> getBlockHashes(long firstBlockIndex, long blockCount) throws IridiumWalletdException;
 
-    List<TxHashBag> getTransactionHashes(String blockHash, long blockCount, List<String> addresses, String paymentId) throws IridiumWalletdException;
+    List<String> getBlockHashes(BlockIndexRange blockIndexRange) throws IridiumWalletdException;
 
-    List<TxHashBag> getTransactionHashes(long firstBlockIndex, long blockCount, List<String> addresses, String paymentId) throws IridiumWalletdException;
 
-    List<TxItemBag> getTransactions(String blockHash, long blockCount, List<String> addresses, String paymentId) throws IridiumWalletdException;
+    <T extends  BlockRange> List<TxHashBag> getTransactionHashes(T blockRange) throws IridiumWalletdException;
 
-    List<TxItemBag> getTransactions(long firstBlockIndex, long blockCount, List<String> addresses, String paymentId) throws IridiumWalletdException;
+    <T extends  BlockRange> List<TxHashBag> getTransactionHashes(T blockRange, List<String> addresses) throws IridiumWalletdException;
+
+    <T extends  BlockRange> List<TxHashBag> getTransactionHashes(T blockRange, List<String> addresses, String paymentId) throws IridiumWalletdException;
+
+
+
+    <T extends  BlockRange> List<TxItemBag> getTransactions(T blockRange) throws IridiumWalletdException;
+
+    <T extends  BlockRange> List<TxItemBag> getTransactions(T blockRange, List<String> addresses) throws IridiumWalletdException;
+
+    <T extends  BlockRange> List<TxItemBag> getTransactions(T blockRange, List<String> addresses, String paymentId) throws IridiumWalletdException;
+
 
     List<String> getUnconfirmedTransactionHashes(List<String> addresses) throws IridiumWalletdException;
 
