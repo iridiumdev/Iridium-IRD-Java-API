@@ -1,4 +1,4 @@
-package cash.ird.walletd.rpc;
+package cash.ird.walletd.model.request;
 
 import cash.ird.walletd.rpc.method.RequestMethod;
 import lombok.Data;

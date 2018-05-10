@@ -1,11 +1,14 @@
 package cash.ird.walletd;
 
 import cash.ird.walletd.model.body.*;
+import cash.ird.walletd.model.request.Key;
 import cash.ird.walletd.rpc.exception.IridiumWalletdException;
 
 import java.util.List;
 
 public interface IridiumAPI {
+
+    boolean reset() throws IridiumWalletdException;
 
     boolean reset(String viewSecretKey) throws IridiumWalletdException;
 
@@ -15,13 +18,17 @@ public interface IridiumAPI {
 
     SpendKeyPair getSpendKeys(String address) throws IridiumWalletdException;
 
-    Status getStatus(String address) throws IridiumWalletdException;
+    Status getStatus() throws IridiumWalletdException;
 
     List<String> getAddresses() throws IridiumWalletdException;
 
-    String createAddress(String secretSpendKey, String publicSpendKey) throws IridiumWalletdException;
+    String createAddress() throws IridiumWalletdException;
+
+    String createAddress(Key key) throws IridiumWalletdException;
 
     boolean deleteAddress(String address) throws IridiumWalletdException;
+
+    Balance getBalance() throws IridiumWalletdException;
 
     Balance getBalance(String address) throws IridiumWalletdException;
 

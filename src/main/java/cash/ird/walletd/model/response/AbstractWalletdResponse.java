@@ -1,9 +1,9 @@
-package cash.ird.walletd.rpc;
+package cash.ird.walletd.model.response;
 
 import lombok.Data;
 
 @Data
-public abstract class AbstractResponse<T, S> {
+public abstract class AbstractWalletdResponse<T, S> {
 
     private String jsonrpc;
 
@@ -11,7 +11,7 @@ public abstract class AbstractResponse<T, S> {
 
     private T result;
 
-    private RPCError error;
+    private WalletdError error;
 
     public abstract S unwrap();
 

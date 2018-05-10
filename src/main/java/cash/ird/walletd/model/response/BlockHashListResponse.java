@@ -4,9 +4,9 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 
 import java.util.List;
 
-public class AddressListResponse extends WrappedWalletdResponse<AddressListResponse,List<String>> {
+public class BlockHashListResponse extends WrappedWalletdResponse<BlockHashListResponse,List<String>> {
 
-    @JsonSetter("addresses")
+    @JsonSetter("blockHashes")
     @Override
     public void setWrapped(List<String> wrapped) {
         this.setInnerWrapped(wrapped);

@@ -2,6 +2,8 @@ package cash.ird.walletd;
 
 
 import cash.ird.walletd.model.body.*;
+import cash.ird.walletd.model.request.Key;
+import cash.ird.walletd.model.request.PrivateKey;
 import cash.ird.walletd.model.response.*;
 import cash.ird.walletd.rpc.WalletdClient;
 import cash.ird.walletd.rpc.exception.IridiumWalletdException;
@@ -27,6 +29,11 @@ public class IridiumClient implements IridiumAPI {
 
     public IridiumClient(String url) {
         this.walletdClient = new WalletdClient(url);
+    }
+
+    @Override
+    public boolean reset() throws IridiumWalletdException {
+        return this.walletdClient.doRequest(RequestMethod.RESET, NoopResponse.class) != null;
     }
 
     @Override
@@ -59,11 +66,8 @@ public class IridiumClient implements IridiumAPI {
     }
 
     @Override
-    public Status getStatus(String address) throws IridiumWalletdException {
-        Map<String, Object> params = buildParams();
-        params.put("address", address);
-
-        return this.walletdClient.doRequest(RequestMethod.GET_STATUS, Collections.unmodifiableMap(params), StatusResponse.class);
+    public Status getStatus() throws IridiumWalletdException {
+        return this.walletdClient.doRequest(RequestMethod.GET_STATUS, StatusResponse.class);
     }
 
     @Override
@@ -72,23 +76,60 @@ public class IridiumClient implements IridiumAPI {
     }
 
     @Override
-    public String createAddress(String secretSpendKey, String publicSpendKey) throws IridiumWalletdException {
-        return null;
+    public String createAddress() throws IridiumWalletdException {
+        return this.walletdClient.doRequest(RequestMethod.CREATE_ADDRESS, AddressResponse.class);
+    }
+
+    @Override
+    public String createAddress(Key key) throws IridiumWalletdException {
+        if (key != null) {
+            Map<String, Object> params = buildParams();
+            if (key.isPrivate()) {
+                params.put("secretSpendKey", key.getValue());
+            } else {
+                params.put("publicSpendKey", key.getValue());
+            }
+
+            return this.walletdClient.doRequest(RequestMethod.CREATE_ADDRESS, Collections.unmodifiableMap(params), AddressResponse.class);
+        } else {
+            return this.createAddress();
+        }
     }
 
     @Override
     public boolean deleteAddress(String address) throws IridiumWalletdException {
-        return false;
+        Map<String, Object> params = buildParams();
+
+        if (address != null) {
+            params.put("address", address);
+        }
+
+        return this.walletdClient.doRequest(RequestMethod.DELETE_ADDRESS, Collections.unmodifiableMap(params), NoopResponse.class) != null;
+    }
+
+    @Override
+    public Balance getBalance() throws IridiumWalletdException {
+        return this.walletdClient.doRequest(RequestMethod.GET_BALANCE, BalanceResponse.class);
     }
 
     @Override
     public Balance getBalance(String address) throws IridiumWalletdException {
-        return null;
+        Map<String, Object> params = buildParams();
+
+        if (address != null) {
+            params.put("address", address);
+        }
+
+        return this.walletdClient.doRequest(RequestMethod.GET_BALANCE, Collections.unmodifiableMap(params), BalanceResponse.class);
     }
 
     @Override
     public List<String> getBlockHashes(long firstBlockIndex, long blockCount) throws IridiumWalletdException {
-        return null;
+        Map<String, Object> params = buildParams();
+        params.put("firstBlockIndex", firstBlockIndex);
+        params.put("blockCount", blockCount);
+
+        return this.walletdClient.doRequest(RequestMethod.GET_BLOCK_HASHES, Collections.unmodifiableMap(params), BlockHashListResponse.class);
     }
 
     @Override
