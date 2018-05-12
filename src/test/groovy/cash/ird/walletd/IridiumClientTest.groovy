@@ -9,6 +9,7 @@ import cash.ird.walletd.model.request.BlockIndexRange
 import cash.ird.walletd.model.request.PrivateKey
 import cash.ird.walletd.model.request.PublicKey
 import cash.ird.walletd.rpc.exception.IridiumWalletdException
+import spock.lang.Ignore
 import spock.lang.Specification
 
 class IridiumClientTest extends Specification {
@@ -16,19 +17,14 @@ class IridiumClientTest extends Specification {
     //todo change tests to run against a mocked http json api instead of the real walletd
 
     private IridiumAPI sut
-    private String baseAddress = "ir3iQYmVZ843gcJdZ2xEPnfCyF5wAmP6wQU6W8QdE3ieGKujPFWy7D5PVnZ2YtQcvs8EBhPfy79SVL4ZPvHebcqQ1WAGsLaMV"
-    private String testAddress1
-    private String testAddress2
-    private String testAddress3
+    private String baseAddress = "ir25uwYFZko6tnoo1sSF2C5maQMUfQ1dmEGrCtHY7spd4KgvUCUwF7SU9JJ7kHT5yKdTxcd7JHJEthVdm7eho7vW1CWdZYDvF"
 
     void setup() {
-        sut = new IridiumClient()
-        //testAddress1 = sut.createAddress()
-        //testAddress2 = sut.createAddress()
-        //testAddress3 = sut.createAddress()
+        sut = new IridiumClient("localhost", 14008)
     }
 
 
+    @Ignore
     def "Reset"() {
         when:
         Boolean success = sut.reset()
@@ -87,7 +83,7 @@ class IridiumClientTest extends Specification {
 
     def "GetSpendKeys"() {
         when:
-        SpendKeyPair keyPair = sut.getSpendKeys(testAddress1)
+        SpendKeyPair keyPair = sut.getSpendKeys(baseAddress)
 
         then:
         keyPair != null

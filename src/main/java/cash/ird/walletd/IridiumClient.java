@@ -5,13 +5,15 @@ import cash.ird.walletd.model.body.*;
 import cash.ird.walletd.model.request.BlockIndexRange;
 import cash.ird.walletd.model.request.BlockRange;
 import cash.ird.walletd.model.request.Key;
-import cash.ird.walletd.model.request.PrivateKey;
 import cash.ird.walletd.model.response.*;
 import cash.ird.walletd.rpc.WalletdClient;
 import cash.ird.walletd.rpc.exception.IridiumWalletdException;
 import cash.ird.walletd.rpc.method.RequestMethod;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class IridiumClient implements IridiumAPI {
 
