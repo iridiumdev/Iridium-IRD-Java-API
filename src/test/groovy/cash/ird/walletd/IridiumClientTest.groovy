@@ -289,13 +289,13 @@ class IridiumClientTest extends Specification {
     }
 
 
-    @RetryOnFailure(delaySeconds=10, times = 10)
+    @RetryOnFailure(delaySeconds=10, times = 29)
     def "SendTransaction to wallet2"() {
         setup:
-        waitForBalance(sut, wallet1, 200005000)
+        waitForBalance(sut, wallet1, 105000)
         when:
         String transactionHash = sut.sendTransaction(
-                [Transfer.of(200000000, wallet2)],
+                [Transfer.of(100000, wallet2)],
                 5000,
                 2,
                 wallet1,
@@ -306,7 +306,7 @@ class IridiumClientTest extends Specification {
 
         then:
         Transaction tx = sut.getTransaction(transactionHash)
-        tx.amount == -200005000
+        tx.amount == -105000
 
         when:
         Status status = sut2.getStatus()
@@ -328,7 +328,7 @@ class IridiumClientTest extends Specification {
 
     private static void waitForBalance(IridiumAPI api, String address, long threshold){
         while(api.getBalance(address).availableBalance <= threshold) {
-            log.info("Waiting to valid balance >$threshold on wallet $address")
+            log.info("Waiting for valid balance >$threshold on wallet $address")
             sleep(1000)
         }
     }
