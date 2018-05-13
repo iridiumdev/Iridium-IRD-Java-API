@@ -9,7 +9,6 @@ import cash.ird.walletd.model.body.TransactionItemBag
 import cash.ird.walletd.model.body.Transfer
 import cash.ird.walletd.model.request.BlockHashRange
 import cash.ird.walletd.model.request.BlockIndexRange
-import cash.ird.walletd.model.request.BlockRange
 import cash.ird.walletd.model.request.PrivateKey
 import cash.ird.walletd.model.request.PublicKey
 import cash.ird.walletd.rpc.exception.IridiumWalletdException
@@ -25,7 +24,7 @@ class IridiumClientTest extends Specification {
     private IridiumAPI sut
 
     @Shared
-    private IridiumAPI walletd2
+    private IridiumAPI sut2
 
     @Shared
     private String wallet1
@@ -37,11 +36,17 @@ class IridiumClientTest extends Specification {
         sut = new IridiumClient("localhost", 14008)
         wallet1 = getClass().getResource("/iridium/wallet1/wallet.adr").readLines().first()
 
-        walletd2 = new IridiumClient("localhost", 14009)
+        sut2 = new IridiumClient("localhost", 14009)
         wallet2 = getClass().getResource("/iridium/wallet2/wallet.adr").readLines().first()
 
     }
 
+    void cleanupSpec(){
+        sut.reset()
+        sut2.reset()
+    }
+
+    @Ignore
     def "Reset"() {
         when:
         Boolean success = sut.reset()
@@ -62,6 +67,7 @@ class IridiumClientTest extends Specification {
         success
     }
 
+    @Ignore
     def "Reset with address should fail"() {
         given:
         String address = sut.createAddress()
@@ -93,7 +99,7 @@ class IridiumClientTest extends Specification {
 
     def "GetStatus for wallet2"() {
         when:
-        Status status = walletd2.getStatus()
+        Status status = sut2.getStatus()
 
         then:
         status.blockCount != null
@@ -193,7 +199,7 @@ class IridiumClientTest extends Specification {
 
     def "GetBalance for wallet2"() {
         when:
-        Balance balance = walletd2.getBalance(wallet2)
+        Balance balance = sut2.getBalance(wallet2)
 
         then:
         balance
@@ -299,8 +305,8 @@ class IridiumClientTest extends Specification {
         tx.amount == -200005000
 
         when:
-        Status status = walletd2.getStatus()
-        def txList = walletd2.getTransactions(BlockIndexRange.of(0, status.knownBlockCount),[wallet2])
+        Status status = sut2.getStatus()
+        def txList = sut2.getTransactions(BlockIndexRange.of(0, status.knownBlockCount),[wallet2])
 
         then:
         !txList.empty
