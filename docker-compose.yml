@@ -4,7 +4,7 @@ services:
   iridiumd1:
     image: danielclasen/iridium-core
     entrypoint: /iridium/iridiumd
-    command: ["--testnet", "--data-dir", "/data", "--rpc-bind-ip", "0.0.0.0"]
+    command: ["--testnet", "--hide-my-port", "--data-dir", "/data", "--rpc-bind-ip", "0.0.0.0", "--add-exclusive-node", "iridiumd2:12007", "--add-exclusive-node", "iridiumd3:12007"]
     volumes:
       - ./src/test/resources/iridium/daemon1:/data
 
@@ -12,11 +12,21 @@ services:
   iridiumd2:
     image: danielclasen/iridium-core
     entrypoint: /iridium/iridiumd
-    command: ["--testnet", "--data-dir", "/data", "--rpc-bind-ip", "0.0.0.0", "--add-peer", "iridiumd1:12007"]
+    command: ["--testnet", "--hide-my-port", "--data-dir", "/data", "--rpc-bind-ip", "0.0.0.0", "--add-exclusive-node", "iridiumd1:12007", "--add-exclusive-node", "iridiumd3:12007"]
+    links:
+      - iridiumd1
+      - iridiumd3
+    volumes:
+      - ./src/test/resources/iridium/daemon2:/data
+
+  iridiumd3:
+    image: danielclasen/iridium-core
+    entrypoint: /iridium/iridiumd
+    command: ["--testnet", "--hide-my-port", "--data-dir", "/data", "--rpc-bind-ip", "0.0.0.0", "--add-exclusive-node", "iridiumd1:12007", "--add-exclusive-node", "iridiumd2:12007"]
     links:
       - iridiumd1
     volumes:
-      - ./src/test/resources/iridium/daemon2:/data
+      - ./src/test/resources/iridium/daemon3:/data
 
   walletd-gen1:
     image: danielclasen/iridium-walletd-gen
@@ -43,7 +53,7 @@ services:
 
   miner1:
     image: danielclasen/iridium-testminer
-    command: ["--daemon-host", "iridiumd2", "--threads", "1"]
+    command: ["--daemon-host", "iridiumd2", "--threads", "1", "--log-level", "2"]
     links:
       - walletd1
     volumes:
@@ -51,7 +61,7 @@ services:
 
   miner2:
     image: danielclasen/iridium-testminer
-    command: ["--daemon-host", "iridiumd1", "--threads", "1"]
+    command: ["--daemon-host", "iridiumd1", "--threads", "1", "--log-level", "2"]
     links:
       - walletd2
     volumes:

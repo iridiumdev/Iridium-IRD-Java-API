@@ -79,15 +79,30 @@ public interface IridiumAPI {
 
     String createDelayedTransaction(List<Transfer> transfers, long fee, int anonymity, String changeAddress, List<String> addresses, String extra, Long unlockTime, String paymentId) throws IridiumWalletdException;
 
+    String createDelayedTransaction(List<Transfer> transfers, long fee, int anonymity, List<String> addresses, String extra, Long unlockTime, String paymentId) throws IridiumWalletdException;
+
+    String createDelayedTransaction(List<Transfer> transfers, long fee, int anonymity, String address, String extra, Long unlockTime, String paymentId) throws IridiumWalletdException;
+
+
     List<String> getDelayedTransactionHashes() throws IridiumWalletdException;
+
 
     boolean deleteDelayedTransaction(String transactionHash) throws IridiumWalletdException;
 
+
     boolean sendDelayedTransaction(String transactionHash) throws IridiumWalletdException;
 
-    String sendFusionTransaction(long threshold, int anonymity, String destinationAddress, List<String> addresses) throws IridiumWalletdException;
+
+    String sendFusionTransaction(long threshold, int anonymity, List<String> addresses, String destinationAddress) throws IridiumWalletdException;
+
+    String sendFusionTransaction(long threshold, int anonymity, String address) throws IridiumWalletdException;
+
+    String sendFusionTransaction(long threshold, int anonymity) throws IridiumWalletdException;
+
 
     EstimatedFusion estimateFusion(long threshold, List<String> addresses) throws IridiumWalletdException;
+
+    EstimatedFusion estimateFusion(long threshold) throws IridiumWalletdException;
 
 
 }

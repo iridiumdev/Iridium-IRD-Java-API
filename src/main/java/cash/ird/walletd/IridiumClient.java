@@ -236,6 +236,133 @@ public class IridiumClient implements IridiumAPI {
 
     @Override
     public String sendTransaction(List<Transfer> transfers, long fee, int anonymity, String changeAddress, List<String> addresses, String extra, Long unlockTime, String paymentId) throws IridiumWalletdException {
+        Map<String, Object> params = buildTxParams(transfers, fee, anonymity, changeAddress, addresses, extra, unlockTime, paymentId);
+        return this.walletdClient.doRequest(RequestMethod.SEND_TRANSACTION, Collections.unmodifiableMap(params), TransactionHashResponse.class);
+    }
+
+
+    @Override
+    public String sendTransaction(List<Transfer> transfers, long fee, int anonymity, List<String> addresses, String extra, Long unlockTime, String paymentId) throws IridiumWalletdException {
+        return this.sendTransaction(transfers, fee, anonymity, null, addresses, extra, unlockTime, paymentId);
+    }
+
+    @Override
+    public String sendTransaction(List<Transfer> transfers, long fee, int anonymity, String address, String extra, Long unlockTime, String paymentId) throws IridiumWalletdException {
+        return this.sendTransaction(transfers, fee, anonymity, null, Collections.singletonList(address), extra, unlockTime, paymentId);
+    }
+
+    @Override
+    public String createDelayedTransaction(List<Transfer> transfers, long fee, int anonymity, String changeAddress, List<String> addresses, String extra, Long unlockTime, String paymentId) throws IridiumWalletdException {
+        Map<String, Object> params = buildTxParams(transfers, fee, anonymity, changeAddress, addresses, extra, unlockTime, paymentId);
+        return this.walletdClient.doRequest(RequestMethod.CREATE_DELAYED_TRANSACTION, Collections.unmodifiableMap(params), TransactionHashResponse.class);
+    }
+
+    @Override
+    public String createDelayedTransaction(List<Transfer> transfers, long fee, int anonymity, List<String> addresses, String extra, Long unlockTime, String paymentId) throws IridiumWalletdException {
+        return this.createDelayedTransaction(transfers, fee, anonymity, null, addresses, extra, unlockTime, paymentId);
+    }
+
+    @Override
+    public String createDelayedTransaction(List<Transfer> transfers, long fee, int anonymity, String address, String extra, Long unlockTime, String paymentId) throws IridiumWalletdException {
+        return this.createDelayedTransaction(transfers, fee, anonymity, null, Collections.singletonList(address), extra, unlockTime, paymentId);
+    }
+
+
+    @Override
+    public List<String> getDelayedTransactionHashes() throws IridiumWalletdException {
+        return this.walletdClient.doRequest(RequestMethod.GET_DELAYED_TRANSACTION_HASHES, TransactionHashListResponse.class);
+    }
+
+    @Override
+    public boolean deleteDelayedTransaction(String transactionHash) throws IridiumWalletdException {
+        Map<String, Object> params = buildParams();
+        if (transactionHash != null) {
+
+            params.put("transactionHash", transactionHash);
+        } else {
+            throw new IllegalArgumentException("transactionHash must not be null!");
+        }
+        return this.walletdClient.doRequest(RequestMethod.DELETE_DELAYED_TRANSACTION, Collections.unmodifiableMap(params), NoopResponse.class) != null;
+    }
+
+    @Override
+    public boolean sendDelayedTransaction(String transactionHash) throws IridiumWalletdException {
+        Map<String, Object> params = buildParams();
+        if (transactionHash != null) {
+
+            params.put("transactionHash", transactionHash);
+        } else {
+            throw new IllegalArgumentException("transactionHash must not be null!");
+        }
+        return this.walletdClient.doRequest(RequestMethod.SEND_DELAYED_TRANSACTION, Collections.unmodifiableMap(params), NoopResponse.class) != null;
+    }
+
+    @Override
+    public String sendFusionTransaction(long threshold, int anonymity, List<String> addresses, String destinationAddress) throws IridiumWalletdException {
+        Map<String, Object> params = buildParams();
+        params.put("threshold", threshold);
+        params.put("anonymity", anonymity);
+
+        List<String> containerAddresses = this.getAddresses();
+
+        if (destinationAddress == null) {
+
+            if (addresses == null || addresses.isEmpty()) {
+                if (containerAddresses.size() == 1) {
+                    params.put("destinationAddress", containerAddresses.get(0));
+                } else {
+                    throw new IllegalArgumentException("destinationAddress must not be null if no addresses specified and container has multiple addresses!");
+                }
+            } else {
+                if (addresses.size() == 1) {
+                    params.put("destinationAddress", addresses.get(0));
+                } else {
+                    throw new IllegalArgumentException("destinationAddress must not be null if multiple addresses specified!");
+                }
+            }
+
+        } else {
+            params.put("destinationAddress", destinationAddress);
+        }
+
+        return this.walletdClient.doRequest(RequestMethod.SEND_FUSION_TRANSACTION, Collections.unmodifiableMap(params), TransactionHashResponse.class);
+    }
+
+    @Override
+    public String sendFusionTransaction(long threshold, int anonymity, String address) throws IridiumWalletdException {
+        return this.sendFusionTransaction(threshold, anonymity, Collections.singletonList(address), null);
+    }
+
+    @Override
+    public String sendFusionTransaction(long threshold, int anonymity) throws IridiumWalletdException {
+        return this.sendFusionTransaction(threshold, anonymity, null, null);
+    }
+
+
+    @Override
+    public EstimatedFusion estimateFusion(long threshold, List<String> addresses) throws IridiumWalletdException {
+        Map<String, Object> params = buildParams();
+        params.put("threshold", threshold);
+
+        if (addresses != null && !addresses.isEmpty()) {
+            params.put("addresses", addresses);
+        }
+
+        return this.walletdClient.doRequest(RequestMethod.ESTIMATE_FUSION, Collections.unmodifiableMap(params), EstimatedFusionResponse.class);
+    }
+
+    @Override
+    public EstimatedFusion estimateFusion(long threshold) throws IridiumWalletdException {
+        return this.estimateFusion(threshold, null);
+    }
+
+
+
+    private Map<String, Object> buildParams() {
+        return new HashMap<>();
+    }
+
+    private Map<String, Object> buildTxParams(List<Transfer> transfers, long fee, int anonymity, String changeAddress, List<String> addresses, String extra, Long unlockTime, String paymentId) throws IridiumWalletdException {
         Map<String, Object> params = buildParams();
 
         if (transfers != null && !transfers.isEmpty()) {
@@ -285,51 +412,8 @@ public class IridiumClient implements IridiumAPI {
         if (paymentId != null) {
             params.put("paymentId", paymentId);
         }
-
-        return this.walletdClient.doRequest(RequestMethod.SEND_TRANSACTION, Collections.unmodifiableMap(params), TransactionHashResponse.class);
+        return params;
     }
 
-    @Override
-    public String sendTransaction(List<Transfer> transfers, long fee, int anonymity, List<String> addresses, String extra, Long unlockTime, String paymentId) throws IridiumWalletdException {
-        return this.sendTransaction(transfers, fee, anonymity, null, addresses, extra, unlockTime, paymentId);
-    }
 
-    @Override
-    public String sendTransaction(List<Transfer> transfers, long fee, int anonymity, String address, String extra, Long unlockTime, String paymentId) throws IridiumWalletdException {
-        return this.sendTransaction(transfers, fee, anonymity, null, Collections.singletonList(address), extra, unlockTime, paymentId);
-    }
-
-    @Override
-    public String createDelayedTransaction(List<Transfer> transfers, long fee, int anonymity, String changeAddress, List<String> addresses, String extra, Long unlockTime, String paymentId) throws IridiumWalletdException {
-        return null;
-    }
-
-    @Override
-    public List<String> getDelayedTransactionHashes() throws IridiumWalletdException {
-        return null;
-    }
-
-    @Override
-    public boolean deleteDelayedTransaction(String transactionHash) throws IridiumWalletdException {
-        return false;
-    }
-
-    @Override
-    public boolean sendDelayedTransaction(String transactionHash) throws IridiumWalletdException {
-        return false;
-    }
-
-    @Override
-    public String sendFusionTransaction(long threshold, int anonymity, String destinationAddress, List<String> addresses) throws IridiumWalletdException {
-        return null;
-    }
-
-    @Override
-    public EstimatedFusion estimateFusion(long threshold, List<String> addresses) throws IridiumWalletdException {
-        return null;
-    }
-
-    private Map<String, Object> buildParams() throws IridiumWalletdException {
-        return new HashMap<>();
-    }
 }

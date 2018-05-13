@@ -5,33 +5,42 @@ import cash.ird.walletd.model.body.SpendKeyPair
 import cash.ird.walletd.model.body.Status
 import cash.ird.walletd.model.body.Transaction
 import cash.ird.walletd.model.body.TransactionHashBag
+import cash.ird.walletd.model.body.TransactionItemBag
 import cash.ird.walletd.model.body.Transfer
 import cash.ird.walletd.model.request.BlockHashRange
 import cash.ird.walletd.model.request.BlockIndexRange
+import cash.ird.walletd.model.request.BlockRange
 import cash.ird.walletd.model.request.PrivateKey
 import cash.ird.walletd.model.request.PublicKey
 import cash.ird.walletd.rpc.exception.IridiumWalletdException
 import com.anotherchrisberry.spock.extensions.retry.RetryOnFailure
 import spock.lang.Ignore
+import spock.lang.Shared
 import spock.lang.Specification
 
 class IridiumClientTest extends Specification {
 
 
+    @Shared
     private IridiumAPI sut
+
+    @Shared
+    private IridiumAPI walletd2
+
+    @Shared
     private String wallet1
+
+    @Shared
     private String wallet2
 
-    void setup() {
+    void setupSpec() {
         sut = new IridiumClient("localhost", 14008)
         wallet1 = getClass().getResource("/iridium/wallet1/wallet.adr").readLines().first()
-        sut.reset()
 
-        def walletd2 = new IridiumClient("localhost", 14009)
+        walletd2 = new IridiumClient("localhost", 14009)
         wallet2 = getClass().getResource("/iridium/wallet2/wallet.adr").readLines().first()
-        walletd2.reset()
-    }
 
+    }
 
     def "Reset"() {
         when:
@@ -74,9 +83,17 @@ class IridiumClientTest extends Specification {
         success
     }
 
-    def "GetStatus"() {
+    def "GetStatus for wallet1"() {
         when:
         Status status = sut.getStatus()
+
+        then:
+        status.blockCount != null
+    }
+
+    def "GetStatus for wallet2"() {
+        when:
+        Status status = walletd2.getStatus()
 
         then:
         status.blockCount != null
@@ -174,6 +191,16 @@ class IridiumClientTest extends Specification {
         balance.lockedAmount >= 0
     }
 
+    def "GetBalance for wallet2"() {
+        when:
+        Balance balance = walletd2.getBalance(wallet2)
+
+        then:
+        balance
+        balance.availableBalance >= 0
+        balance.lockedAmount >= 0
+    }
+
 
     def "GetBlockHashes"() {
         when:
@@ -185,18 +212,21 @@ class IridiumClientTest extends Specification {
     }
 
     def "GetTransactionHashes with BlockIndexRange"() {
+        given:
+        Status status = sut.getStatus()
         when:
-        List<TransactionHashBag> hashBags = sut.getTransactionHashes(BlockIndexRange.of(0, 150))
+        List<TransactionHashBag> hashBags = sut.getTransactionHashes(BlockIndexRange.of(0, status.knownBlockCount))
 
         then:
         !hashBags.isEmpty()
     }
 
     def "GetTransactionHashes with BlockHashRange"() {
-        setup:
+        given:
         String firstBlockHash = sut.getBlockHashes(BlockIndexRange.of(0, 1)).first()
+        Status status = sut.getStatus()
         when:
-        List<TransactionHashBag> hashBags = sut.getTransactionHashes(BlockHashRange.of(firstBlockHash, 150))
+        List<TransactionHashBag> hashBags = sut.getTransactionHashes(BlockHashRange.of(firstBlockHash, status.knownBlockCount))
 
         then:
         !hashBags.isEmpty()
@@ -204,11 +234,12 @@ class IridiumClientTest extends Specification {
     }
 
     def "GetTransactionHashes with BlockHashRange and addresses"() {
-        setup:
+        given:
         String firstBlockHash = sut.getBlockHashes(BlockIndexRange.of(0, 1)).first()
         List<String> addresses = [sut.createAddress()]
+        Status status = sut.getStatus()
         when:
-        List<TransactionHashBag> hashBags = sut.getTransactionHashes(BlockHashRange.of(firstBlockHash, 150), addresses)
+        List<TransactionHashBag> hashBags = sut.getTransactionHashes(BlockHashRange.of(firstBlockHash, status.knownBlockCount), addresses)
 
         then:
         !hashBags.isEmpty()
@@ -216,17 +247,37 @@ class IridiumClientTest extends Specification {
     }
 
     def "GetTransactionHashes with BlockIndexRange and addresses and paymentId"() {
-        setup:
-        String firstBlockHash = sut.getBlockHashes(BlockIndexRange.of(0, 1)).first()
+        given:
         List<String> addresses = [sut.createAddress()]
         String paymentId = generatePaymentId()
+        Status status = sut.getStatus()
         when:
-        List<TransactionHashBag> hashBags = sut.getTransactionHashes(BlockIndexRange.of(0, 150), addresses, paymentId)
+        List<TransactionHashBag> hashBags = sut.getTransactionHashes(BlockIndexRange.of(0, status.knownBlockCount), addresses, paymentId)
 
         then:
         !hashBags.isEmpty()
         hashBags.first().transactionHashes.isEmpty()
     }
+
+    def "GetTransactions"() {
+        given:
+        Status status = sut.getStatus()
+        when:
+        List<TransactionItemBag> bagList = sut.getTransactions(BlockIndexRange.of(0, status.knownBlockCount))
+
+        then:
+        !bagList.empty
+
+    }
+
+    def "GetUnconfirmedTransactionHashes"() {
+        when:
+        List<String> unconfirmedTransactionHashes = sut.getUnconfirmedTransactionHashes()
+
+        then:
+        unconfirmedTransactionHashes != null
+    }
+
 
     @RetryOnFailure(delaySeconds=2, times = 10)
     def "SendTransaction to wallet2"() {
@@ -246,6 +297,13 @@ class IridiumClientTest extends Specification {
         then:
         Transaction tx = sut.getTransaction(transactionHash)
         tx.amount == -200005000
+
+        when:
+        Status status = walletd2.getStatus()
+        def txList = walletd2.getTransactions(BlockIndexRange.of(0, status.knownBlockCount),[wallet2])
+
+        then:
+        !txList.empty
 
     }
 
