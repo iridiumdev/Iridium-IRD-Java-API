@@ -14,17 +14,22 @@ import spock.lang.Specification
 
 class IridiumClientTest extends Specification {
 
-    //todo change tests to run against a mocked http json api instead of the real walletd
 
     private IridiumAPI sut
-    private String baseAddress = "ir25uwYFZko6tnoo1sSF2C5maQMUfQ1dmEGrCtHY7spd4KgvUCUwF7SU9JJ7kHT5yKdTxcd7JHJEthVdm7eho7vW1CWdZYDvF"
+    private String wallet1
+    private String wallet2
 
     void setup() {
         sut = new IridiumClient("localhost", 14008)
+        wallet1 = getClass().getResource("/iridium/wallet1/wallet.adr").readLines().first()
+        sut.reset()
+
+        def walletd2 = new IridiumClient("localhost", 14009)
+        wallet2 = getClass().getResource("/iridium/wallet2/wallet.adr").readLines().first()
+        walletd2.reset()
     }
 
 
-    @Ignore
     def "Reset"() {
         when:
         Boolean success = sut.reset()
@@ -33,6 +38,7 @@ class IridiumClientTest extends Specification {
         success
     }
 
+    @Ignore
     def "Reset with viewSecretKey"() {
         given:
         String viewKey = sut.getViewKey()
@@ -83,7 +89,7 @@ class IridiumClientTest extends Specification {
 
     def "GetSpendKeys"() {
         when:
-        SpendKeyPair keyPair = sut.getSpendKeys(baseAddress)
+        SpendKeyPair keyPair = sut.getSpendKeys(wallet1)
 
         then:
         keyPair != null
@@ -155,13 +161,13 @@ class IridiumClientTest extends Specification {
         balance.lockedAmount == 0
     }
 
-    def "GetBalance with baseAddress"() {
+    def "GetBalance for wallet1"() {
         when:
-        Balance balance = sut.getBalance(baseAddress)
+        Balance balance = sut.getBalance(wallet1)
 
         then:
         balance
-        balance.availableBalance > 0
+        balance.availableBalance >= 0
         balance.lockedAmount >= 0
     }
 

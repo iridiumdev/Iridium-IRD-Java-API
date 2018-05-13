@@ -2,43 +2,63 @@ version: '2'
 services:
 
   iridiumd1:
-    image: iridium:test2
+    image: danielclasen/iridium-core
     entrypoint: /iridium/iridiumd
     command: ["--testnet", "--data-dir", "/data", "--rpc-bind-ip", "0.0.0.0"]
 
+
   iridiumd2:
-    image: iridium:test2
+    image: danielclasen/iridium-core
     entrypoint: /iridium/iridiumd
     command: ["--testnet", "--data-dir", "/data", "--rpc-bind-ip", "0.0.0.0", "--add-peer", "iridiumd1:12007"]
     links:
       - iridiumd1
 
-  walletd-gen:
-    image: iridium:test2
-    entrypoint: /iridium/iridium_walletd
+
+  walletd-gen1:
+    image: danielclasen/iridium-walletd-gen
     command: ["--testnet", "--data-dir", "/data", "-w", "/data/wallet", "-p", "password", "-g"]
     volumes:
-      - wallet-volume:/data
+      - ./src/test/resources/iridium/wallet1:/data
 
-  walletd:
-    image: iridium:test2
+
+  walletd1:
+    image: danielclasen/iridium-core
     entrypoint: /iridium/iridium_walletd
     command: ["--testnet", "--data-dir", "/data", "-w", "/data/wallet", "-p", "password", "--daemon-address", "iridiumd2", "--log-level", "2"]
     volumes:
-      - wallet-volume:/data
+      - ./src/test/resources/iridium/wallet1:/data
     links:
-      - walletd-gen
+      - walletd-gen1
       - iridiumd2
     ports:
       - 14008:14007
 
+
   miner:
-    image: iridium:test2
-    entrypoint: /iridium/iridium_miner
-    command: ["--address", "ir2fq8BaEgdCoWprKm8i9c3tk5UURqir4PWw28mT6Re3V7u9HNNotXNU9JJ7kHT5yKdTxcd7JHJEthVdm7eho7vW1CWa8bAL4", "--daemon-host", "iridiumd2", "--threads", "1", "--limit", "25"]
+    image: danielclasen/iridium-testminer
+    command: ["--daemon-host", "iridiumd2", "--threads", "1", "--limit", "25"]
     links:
       - iridiumd2
+    volumes:
+      - ./src/test/resources/iridium/wallet1:/data
 
 
-volumes:
-  wallet-volume:
+  walletd-gen2:
+    image: danielclasen/iridium-walletd-gen
+    command: ["--testnet", "--data-dir", "/data", "-w", "/data/wallet", "-p", "password", "-g"]
+    volumes:
+      - ./src/test/resources/iridium/wallet2:/data
+
+  walletd2:
+    image: danielclasen/iridium-core
+    entrypoint: /iridium/iridium_walletd
+    command: ["--testnet", "--data-dir", "/data", "-w", "/data/wallet", "-p", "password", "--daemon-address", "iridiumd1", "--log-level", "2"]
+    volumes:
+      - ./src/test/resources/iridium/wallet2:/data
+    links:
+      - walletd-gen2
+      - iridiumd1
+    ports:
+      - 14009:14007
+
