@@ -23,10 +23,15 @@ dependencies {
     testImplementation 'org.codehaus.groovy:groovy-all:2.4.13'
     testImplementation 'org.spockframework:spock-core:1.0-groovy-2.4'
     testImplementation 'junit:junit:4.12'
+    testImplementation 'com.anotherchrisberry:spock-retry:0.6.3'
 }
 
 
 repositories {
 
     jcenter()
+
+    maven {
+        url  "https://dl.bintray.com/anotherchrisberry/spock-retry"
+    }
 }

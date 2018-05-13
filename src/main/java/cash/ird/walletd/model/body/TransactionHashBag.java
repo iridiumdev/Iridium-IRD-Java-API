@@ -5,7 +5,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class TxHashBag {
+public class TransactionHashBag {
 
     private List<String> transactionHashes;
 

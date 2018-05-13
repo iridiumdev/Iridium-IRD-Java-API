@@ -47,26 +47,35 @@ public interface IridiumAPI {
     List<String> getBlockHashes(BlockIndexRange blockIndexRange) throws IridiumWalletdException;
 
 
-    <T extends  BlockRange> List<TxHashBag> getTransactionHashes(T blockRange) throws IridiumWalletdException;
+    <T extends  BlockRange> List<TransactionHashBag> getTransactionHashes(T blockRange) throws IridiumWalletdException;
 
-    <T extends  BlockRange> List<TxHashBag> getTransactionHashes(T blockRange, List<String> addresses) throws IridiumWalletdException;
+    <T extends  BlockRange> List<TransactionHashBag> getTransactionHashes(T blockRange, List<String> addresses) throws IridiumWalletdException;
 
-    <T extends  BlockRange> List<TxHashBag> getTransactionHashes(T blockRange, List<String> addresses, String paymentId) throws IridiumWalletdException;
+    <T extends  BlockRange> List<TransactionHashBag> getTransactionHashes(T blockRange, List<String> addresses, String paymentId) throws IridiumWalletdException;
 
 
 
-    <T extends  BlockRange> List<TxItemBag> getTransactions(T blockRange) throws IridiumWalletdException;
+    <T extends  BlockRange> List<TransactionItemBag> getTransactions(T blockRange) throws IridiumWalletdException;
 
-    <T extends  BlockRange> List<TxItemBag> getTransactions(T blockRange, List<String> addresses) throws IridiumWalletdException;
+    <T extends  BlockRange> List<TransactionItemBag> getTransactions(T blockRange, List<String> addresses) throws IridiumWalletdException;
 
-    <T extends  BlockRange> List<TxItemBag> getTransactions(T blockRange, List<String> addresses, String paymentId) throws IridiumWalletdException;
+    <T extends  BlockRange> List<TransactionItemBag> getTransactions(T blockRange, List<String> addresses, String paymentId) throws IridiumWalletdException;
 
+
+    List<String> getUnconfirmedTransactionHashes() throws IridiumWalletdException;
 
     List<String> getUnconfirmedTransactionHashes(List<String> addresses) throws IridiumWalletdException;
 
+
     Transaction getTransaction(String transactionHash) throws IridiumWalletdException;
 
+
     String sendTransaction(List<Transfer> transfers, long fee, int anonymity, String changeAddress, List<String> addresses, String extra, Long unlockTime, String paymentId) throws IridiumWalletdException;
+
+    String sendTransaction(List<Transfer> transfers, long fee, int anonymity, List<String> addresses, String extra, Long unlockTime, String paymentId) throws IridiumWalletdException;
+
+    String sendTransaction(List<Transfer> transfers, long fee, int anonymity, String address, String extra, Long unlockTime, String paymentId) throws IridiumWalletdException;
+
 
     String createDelayedTransaction(List<Transfer> transfers, long fee, int anonymity, String changeAddress, List<String> addresses, String extra, Long unlockTime, String paymentId) throws IridiumWalletdException;
 
