@@ -13,10 +13,12 @@ import cash.ird.walletd.model.request.PrivateKey
 import cash.ird.walletd.model.request.PublicKey
 import cash.ird.walletd.rpc.exception.IridiumWalletdException
 import com.anotherchrisberry.spock.extensions.retry.RetryOnFailure
+import groovy.util.logging.Log
 import spock.lang.Ignore
 import spock.lang.Shared
 import spock.lang.Specification
 
+@Log
 class IridiumClientTest extends Specification {
 
 
@@ -39,6 +41,8 @@ class IridiumClientTest extends Specification {
         sut2 = new IridiumClient("localhost", 14009)
         wallet2 = getClass().getResource("/iridium/wallet2/wallet.adr").readLines().first()
 
+        waitForBalance(sut, wallet1, 0)
+        waitForBalance(sut2, wallet2, 0)
     }
 
     void cleanupSpec(){
@@ -285,10 +289,10 @@ class IridiumClientTest extends Specification {
     }
 
 
-    @RetryOnFailure(delaySeconds=2, times = 10)
+    @RetryOnFailure(delaySeconds=10, times = 10)
     def "SendTransaction to wallet2"() {
         setup:
-
+        waitForBalance(sut, wallet1, 200005000)
         when:
         String transactionHash = sut.sendTransaction(
                 [Transfer.of(200000000, wallet2)],
@@ -320,6 +324,13 @@ class IridiumClientTest extends Specification {
                 .collect { Integer.toString(it, 16) }
                 .join()
         return result
+    }
+
+    private static void waitForBalance(IridiumAPI api, String address, long threshold){
+        while(api.getBalance(address).availableBalance <= threshold) {
+            log.info("Waiting to valid balance >$threshold on wallet $address")
+            sleep(1000)
+        }
     }
 
 }
