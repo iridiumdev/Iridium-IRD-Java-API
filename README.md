@@ -32,7 +32,7 @@ To run the integration tests first start the embedded testnet from the `docker-c
     docker-compose up
     
 This will generate a few docker containers running two `iridiumd` nodes, two `irididum_walletd` instances and generates two new wallets which are used in the walletd instances.
-Additionally a `iridium_miner` instance will be launched to mine 25 blocks. This is necessary to get some IRDs in our test wallets. Don't worry that won't take long in a testnet setup ;)
+Additionally two `iridium_miner` instances will be launched to mine blocks during the tests. This is necessary to get some IRDs in our test wallets and approval on test transactions. Don't worry mining won't take long in a testnet setup ;)
 
 After the docker-compose is started, leave it running for a few minutes and then execute the tests from [IridiumClientTest.groovy](src/test/groovy/cash/ird/walletd/IridiumClientTest.groovy).
 To do so you can use your favorite IDE to just run the spock tests or run the gradle test task from the projects root with:
