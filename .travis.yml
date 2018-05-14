@@ -18,6 +18,13 @@ before_install:
   - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
   - chmod +x docker-compose
   - sudo mv docker-compose /usr/local/bin
+  - sudo chmod -R 777 src/test/resources/iridium
+  - ls -la src/test/resources/iridium
+  - ls -la src/test/resources/iridium/daemon1
+  - ls -la src/test/resources/iridium/daemon2
+  - ls -la src/test/resources/iridium/daemon3
+  - ls -la src/test/resources/iridium/wallet1
+  - ls -la src/test/resources/iridium/wallet2
   - docker-compose up -d
   - docker ps -a
   - docker-compose logs
