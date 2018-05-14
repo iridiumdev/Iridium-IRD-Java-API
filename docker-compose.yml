@@ -1,4 +1,4 @@
-version: '2'
+version: '3'
 services:
 
   iridiumd1:
@@ -40,6 +40,7 @@ services:
     image: danielclasen/iridium-core
     entrypoint: /iridium/iridium_walletd
     command: ["--testnet", "--data-dir", "/data", "-w", "/data/wallet", "-p", "password", "--daemon-address", "iridiumd2", "--log-level", "2"]
+    restart: on-failure
     volumes:
       - /dev/random:/dev/random
       - /dev/urandom:/dev/urandom
@@ -80,6 +81,7 @@ services:
     image: danielclasen/iridium-core
     entrypoint: /iridium/iridium_walletd
     command: ["--testnet", "--data-dir", "/data", "-w", "/data/wallet", "-p", "password", "--daemon-address", "iridiumd1", "--log-level", "2"]
+    restart: on-failure
     volumes:
       - ./src/test/resources/iridium/wallet2:/data
     links:
