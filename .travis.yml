@@ -18,16 +18,14 @@ before_install:
   - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
   - chmod +x docker-compose
   - sudo mv docker-compose /usr/local/bin
-
-before_script:
   - docker-compose up -d
   - docker ps -a
   - docker-compose logs
 
-
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
   - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+  - sudo chmod -R 777 src/test/resources/iridium
 cache:
   directories:
     - $HOME/.gradle/caches/
