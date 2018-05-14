@@ -29,6 +29,9 @@ before_install:
   - docker ps -a
   - docker-compose logs
 
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
+
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
   - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
