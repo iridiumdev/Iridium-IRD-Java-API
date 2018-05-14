@@ -1,8 +1,10 @@
 plugins {
     id 'java-library'
     id 'groovy'
+    id 'jacoco'
 
     id 'io.franzbecker.gradle-lombok' version '1.14'
+
 }
 
 lombok { // optional: values below are the defaults
@@ -35,3 +37,17 @@ repositories {
         url  "https://dl.bintray.com/anotherchrisberry/spock-retry"
     }
 }
+
+jacocoTestReport {
+    reports {
+        csv.enabled false
+
+        xml.enabled true
+        xml.destination file("${buildDir}/reports/jacoco/report.xml")
+
+        html.enabled true
+        html.destination file("${buildDir}/reports/jacoco/html")
+    }
+}
+
+test.finalizedBy(jacocoTestReport)
