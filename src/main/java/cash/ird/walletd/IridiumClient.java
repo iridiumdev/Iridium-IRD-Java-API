@@ -9,6 +9,7 @@ import cash.ird.walletd.model.response.*;
 import cash.ird.walletd.rpc.WalletdClient;
 import cash.ird.walletd.rpc.exception.IridiumWalletdException;
 import cash.ird.walletd.rpc.method.RequestMethod;
+import lombok.NonNull;
 
 import java.util.*;
 
@@ -24,7 +25,7 @@ public class IridiumClient implements IridiumAPI {
         this("localhost", 14007);
     }
 
-    public IridiumClient(String host, int port) {
+    public IridiumClient(@NonNull String host, @NonNull int port) {
         this(String.format("%s://%s:%s/%s", DEFAULT_PROTOCOL, host, port, DEFAULT_PATH));
     }
 
@@ -242,11 +243,6 @@ public class IridiumClient implements IridiumAPI {
 
 
     @Override
-    public String sendTransaction(List<Transfer> transfers, long fee, int anonymity, List<String> addresses, String extra, Long unlockTime, String paymentId) throws IridiumWalletdException {
-        return this.sendTransaction(transfers, fee, anonymity, null, addresses, extra, unlockTime, paymentId);
-    }
-
-    @Override
     public String sendTransaction(List<Transfer> transfers, long fee, int anonymity, String address, String extra, Long unlockTime, String paymentId) throws IridiumWalletdException {
         return this.sendTransaction(transfers, fee, anonymity, null, Collections.singletonList(address), extra, unlockTime, paymentId);
     }
@@ -255,11 +251,6 @@ public class IridiumClient implements IridiumAPI {
     public String createDelayedTransaction(List<Transfer> transfers, long fee, int anonymity, String changeAddress, List<String> addresses, String extra, Long unlockTime, String paymentId) throws IridiumWalletdException {
         Map<String, Object> params = buildTxParams(transfers, fee, anonymity, changeAddress, addresses, extra, unlockTime, paymentId);
         return this.walletdClient.doRequest(RequestMethod.CREATE_DELAYED_TRANSACTION, Collections.unmodifiableMap(params), TransactionHashResponse.class);
-    }
-
-    @Override
-    public String createDelayedTransaction(List<Transfer> transfers, long fee, int anonymity, List<String> addresses, String extra, Long unlockTime, String paymentId) throws IridiumWalletdException {
-        return this.createDelayedTransaction(transfers, fee, anonymity, null, addresses, extra, unlockTime, paymentId);
     }
 
     @Override
@@ -331,11 +322,6 @@ public class IridiumClient implements IridiumAPI {
     @Override
     public String sendFusionTransaction(long threshold, int anonymity, String address) throws IridiumWalletdException {
         return this.sendFusionTransaction(threshold, anonymity, Collections.singletonList(address), null);
-    }
-
-    @Override
-    public String sendFusionTransaction(long threshold, int anonymity) throws IridiumWalletdException {
-        return this.sendFusionTransaction(threshold, anonymity, null, null);
     }
 
 

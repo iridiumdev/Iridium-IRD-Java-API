@@ -4,57 +4,37 @@ services:
   iridiumd1:
     image: danielclasen/iridium-core
     entrypoint: /iridium/iridiumd
-    command: ["--testnet", "--hide-my-port", "--data-dir", "/data", "--rpc-bind-ip", "0.0.0.0", "--add-exclusive-node", "iridiumd2:12007", "--add-exclusive-node", "iridiumd3:12007"]
+    command: ["--testnet", "--hide-my-port", "--data-dir", "/data", "--rpc-bind-ip", "0.0.0.0"]
     volumes:
       - ./src/test/resources/iridium/daemon1:/data
 
 
-  iridiumd2:
-    image: danielclasen/iridium-core
-    entrypoint: /iridium/iridiumd
-    command: ["--testnet", "--hide-my-port", "--data-dir", "/data", "--rpc-bind-ip", "0.0.0.0", "--add-exclusive-node", "iridiumd1:12007", "--add-exclusive-node", "iridiumd3:12007"]
-    links:
-      - iridiumd1
-      - iridiumd3
-    volumes:
-      - ./src/test/resources/iridium/daemon2:/data
-
-  iridiumd3:
-    image: danielclasen/iridium-core
-    entrypoint: /iridium/iridiumd
-    command: ["--testnet", "--hide-my-port", "--data-dir", "/data", "--rpc-bind-ip", "0.0.0.0", "--add-exclusive-node", "iridiumd1:12007", "--add-exclusive-node", "iridiumd2:12007"]
-    links:
-      - iridiumd1
-    volumes:
-      - ./src/test/resources/iridium/daemon3:/data
-
   walletd-gen1:
     image: danielclasen/iridium-walletd-gen
-    command: ["--testnet", "--data-dir", "/data", "-w", "/data/wallet", "-p", "password", "-g", "--daemon-address", "iridiumd2",]
+    command: ["--testnet", "--data-dir", "/data", "-w", "/data/wallet", "-p", "password", "-g", "--daemon-address", "iridiumd1",]
     volumes:
       - ./src/test/resources/iridium/wallet1:/data
     links:
-      - iridiumd2
+      - iridiumd1
 
   walletd1:
     image: danielclasen/iridium-core
     entrypoint: /iridium/iridium_walletd
-    command: ["--testnet", "--data-dir", "/data", "-w", "/data/wallet", "-p", "password", "--daemon-address", "iridiumd2", "--log-level", "2"]
+    command: ["--testnet", "--data-dir", "/data", "-w", "/data/wallet", "-p", "password", "--daemon-address", "iridiumd1", "--log-level", "2"]
     restart: on-failure
     volumes:
-      - /dev/random:/dev/random
-      - /dev/urandom:/dev/urandom
       - ./src/test/resources/iridium/wallet1:/data
     links:
       - walletd-gen1
-      - iridiumd2
+      - iridiumd1
     ports:
       - 14008:14007
 
 
   miner1:
     image: danielclasen/iridium-testminer
-    command: ["--daemon-host", "iridiumd2", "--threads", "1", "--log-level", "2"]
+    command: ["--daemon-host", "iridiumd1", "--threads", "1", "--log-level", "2"]
+    restart: on-failure
     links:
       - walletd1
     volumes:
@@ -63,10 +43,11 @@ services:
   miner2:
     image: danielclasen/iridium-testminer
     command: ["--daemon-host", "iridiumd1", "--threads", "1", "--log-level", "2"]
+    restart: on-failure
     links:
-      - walletd2
+      - walletd1
     volumes:
-      - ./src/test/resources/iridium/wallet2:/data
+      - ./src/test/resources/iridium/wallet1:/data
 
 
   walletd-gen2:

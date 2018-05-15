@@ -13,12 +13,12 @@ abstract class BeanSpec<T> extends Specification {
         return (Class<T>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0]
     }
 
-    def "Check Bean Spec"() {
+    def "Check bean spec"() {
         expect:
         new BeanTester().testBean(getBeanClass())
     }
 
-    def "equalsContract"() {
+    def "Check equals contract"() {
         given:
         def equalsVerifier = EqualsVerifier
                 .forClass(getBeanClass())

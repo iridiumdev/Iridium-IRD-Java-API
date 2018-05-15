@@ -3,15 +3,16 @@ package cash.ird.walletd.model.request
 import cash.ird.walletd.BeanSpec
 import nl.jqno.equalsverifier.EqualsVerifier
 
-class BlockIndexRangeTest extends BeanSpec<BlockIndexRange> {
+class PublicKeyTest extends BeanSpec<PublicKey> {
 
-    def "static constructor"() {
+    def "reqArgsConstructor"() {
+        given:
+        def value = "public123"
         when:
-        def a = BlockIndexRange.of(0, 1)
+        def key = PublicKey.of(value)
         then:
-        a.getStart() == 0
-        a.getCount() == 1
-        a.getType() == BlockRange.Type.INDEX
+        key.getValue() == value
+        !key.isPrivate()
     }
 
     @Override
@@ -19,5 +20,4 @@ class BlockIndexRangeTest extends BeanSpec<BlockIndexRange> {
         return equalsVerifier
                 .withRedefinedSuperclass()
     }
-
 }

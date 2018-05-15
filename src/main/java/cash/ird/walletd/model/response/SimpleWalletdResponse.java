@@ -5,7 +5,7 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class SimpleWalletdResponse<T> extends AbstractWalletdResponse<T,T> {
+public abstract class SimpleWalletdResponse<T> extends AbstractWalletdResponse<T,T> {
 
     @Override
     public T unwrap() {

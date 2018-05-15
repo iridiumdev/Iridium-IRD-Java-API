@@ -1,19 +1,15 @@
 package cash.ird.walletd.model.request;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
+@NoArgsConstructor
+@RequiredArgsConstructor(staticName = "of")
 public class PublicKey extends Key {
 
-    public PublicKey(String value){
-        this.value = value;
-    }
-
-    public static PublicKey of(String value){
-        return new PublicKey(value);
-    }
+    @NonNull
+    private String value;
 
     @Override
     public boolean isPrivate() {
