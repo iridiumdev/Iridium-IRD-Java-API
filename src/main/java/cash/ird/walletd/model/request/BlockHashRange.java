@@ -1,15 +1,27 @@
 package cash.ird.walletd.model.request;
 
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode(callSuper = false)
 @ToString
 public class BlockHashRange extends BlockRange<String> {
 
+    @Getter
+    @Setter
+    private String start;
+
+    @Getter
+    @Setter
+    private long count;
+
+    @Getter
+    private final Type type = Type.HASH;
+
     private BlockHashRange(){
         super();
-        this.setType(Type.HASH);
     }
 
     public static BlockHashRange of(String start, long count) {
@@ -19,13 +31,6 @@ public class BlockHashRange extends BlockRange<String> {
         return blockHashRange;
     }
 
-    @Override
-    public String getStart() {
-        return this.start;
-    }
 
-    @Override
-    public void setStart(String start) {
-        this.start = start;
-    }
+
 }

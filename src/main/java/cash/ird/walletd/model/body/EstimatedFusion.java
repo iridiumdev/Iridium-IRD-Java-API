@@ -5,8 +5,8 @@ import lombok.Data;
 @Data
 public class EstimatedFusion {
 
-    private long totalOutputCount;
+    private Long totalOutputCount;
 
-    private long fusionReadyCount;
+    private Long fusionReadyCount;
 
 }

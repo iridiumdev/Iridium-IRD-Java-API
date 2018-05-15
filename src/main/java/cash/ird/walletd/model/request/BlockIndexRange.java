@@ -1,15 +1,25 @@
 package cash.ird.walletd.model.request;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 
-@Data
+
 @EqualsAndHashCode(callSuper = true)
+@ToString
 public class BlockIndexRange extends BlockRange<Long> {
+
+    @Getter
+    @Setter
+    private Long start;
+
+    @Getter
+    @Setter
+    private long count;
+
+    @Getter
+    private final Type type = Type.INDEX;
 
     private BlockIndexRange(){
         super();
-        this.setType(Type.INDEX);
     }
 
     public static BlockIndexRange of(long start, long count) {
@@ -17,15 +27,5 @@ public class BlockIndexRange extends BlockRange<Long> {
         blockIndexRange.setStart(start);
         blockIndexRange.setCount(count);
         return blockIndexRange;
-    }
-
-    @Override
-    public Long getStart() {
-        return this.start;
-    }
-
-    @Override
-    public void setStart(Long start) {
-        this.start = start;
     }
 }

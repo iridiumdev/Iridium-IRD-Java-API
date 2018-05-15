@@ -11,9 +11,9 @@ import lombok.RequiredArgsConstructor;
 public class Transfer {
 
     @NonNull
-    private long amount;
+    private Long amount;
 
-    private int type;
+    private Integer type;
 
     @NonNull
     private String address;

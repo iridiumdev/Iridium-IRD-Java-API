@@ -1,24 +1,21 @@
 package cash.ird.walletd.model.request;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
+@EqualsAndHashCode
 public abstract class BlockRange<T> {
-
-    protected T start;
-
-    @Getter
-    @Setter
-    protected long count;
-
-    @Getter
-    @Setter
-    protected Type type;
-
 
     public abstract T getStart();
 
     public abstract void setStart(T start);
+
+    public abstract long getCount();
+
+    public abstract void setCount(long count);
+
+    public abstract Type getType();
 
     public enum Type {
         HASH("blockHash"),

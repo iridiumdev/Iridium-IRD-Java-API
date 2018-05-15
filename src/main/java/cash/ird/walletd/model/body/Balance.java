@@ -1,12 +1,17 @@
 package cash.ird.walletd.model.body;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
 
 @Data
+@NoArgsConstructor
 public class Balance {
 
-    private long lockedAmount;
+    @NonNull
+    private Long lockedAmount;
 
-    private long availableBalance;
+    @NonNull
+    private Long availableBalance;
 
 }

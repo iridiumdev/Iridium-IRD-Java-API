@@ -1,6 +1,7 @@
 package cash.ird.walletd.model.body;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import lombok.Data;
 
 import java.util.List;
@@ -10,21 +11,21 @@ public class Transaction {
 
     private String transactionHash;
 
-    private long blockIndex;
+    private Long blockIndex;
 
-    private long timestamp;
+    private Long timestamp;
 
     @JsonProperty("isBase")
-    private boolean isBase;
+    private Boolean isBase;
 
-    private long unlockTime;
+    private Long unlockTime;
 
-    private long amount;
+    private Long amount;
 
     // TODO: 13.05.18 what is this? It's not in the docs :(
-    private long state;
+    private Long state;
 
-    private long fee;
+    private Long fee;
 
     private String extra;
 
