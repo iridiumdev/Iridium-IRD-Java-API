@@ -490,6 +490,9 @@ class IridiumClientTest extends Specification {
         when:
         def estTotal = sut2.estimateFusion(5000000)
 
+        and:
+        waitForBlockHeightIncrement(sut2, 1)
+
         then:
         estTotal.fusionReadyCount >= addresses.size()
 
@@ -523,6 +526,15 @@ class IridiumClientTest extends Specification {
     private static void waitForTransactionConfirmation(IridiumAPI api, String transactionHash) {
         while (api.getUnconfirmedTransactionHashes().contains(transactionHash)) {
             log.info("Waiting for tx $transactionHash to get confirmed...")
+            sleep(1000)
+        }
+    }
+
+    private static void waitForBlockHeightIncrement(IridiumAPI api, int increment) {
+        def desiredHeight = api.getStatus().knownBlockCount + increment
+        def currentHeight
+        while ((currentHeight = api.getStatus().knownBlockCount) && currentHeight < desiredHeight) {
+            log.info("Waiting for blockHeight>$desiredHeight, currently blockHeight=$currentHeight...")
             sleep(1000)
         }
     }

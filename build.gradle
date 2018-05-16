@@ -59,6 +59,12 @@ jacocoTestReport {
     }
 }
 
-test.finalizedBy(jacocoTestReport)
+test {
+    finalizedBy(jacocoTestReport)
+    testLogging {
+        events "passed", "skipped", "failed"
+        exceptionFormat "full"
+    }
+}
 
 apply from: "$projectDir/distribution.gradle"
