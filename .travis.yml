@@ -43,11 +43,11 @@ deploy:
     secure: sD5fnIVTnTjpjUrxKKQdOG2ltJV2UrAqPbsnOQ6X+YPNZBvEJuC7QZNb5m3N2oHTXDQavGFWVS/83SXmDKcPsKsvcA+3rELDOO6XROAmz+fgOlLPqFFR1Nw0urvX5VQR6kFx2UY1l3caUGZPAiVO37/5Fbv20nxWklSmOEDKgWXsTmv/znoyFh1VBhPNy62oWNVCox20MWr50KzJE3YvXBM0KQU4f5bV7lebh42pQLJfJYAOsq875e+rv0P4G72oE0Tqh/dgyk8n8KUYWmY4DFRKDeTvPST8/wTeiVjIyzzk9qzR8FosbzBKFqDtSKi/KczT13G8/oWv0WLgiKdv4QObPzqZVrxbUTekXZ5B3Qr+0XGaZOF9TpRcUrGwemv2yaZbteZzP60yWbyUdPh638Yt8T9mXhVZat7Xxm6uzyHcLTGceRwPic+ExyGrLJ9VH8OjkYV+VMr2PvcfrVAGmfBAZjx3QHwkl+hrhZaB8w63GZeFBUoFazvds/833jbjRYSSbUpvKFbF4Ec1IRIzJTi345GyshtkQ+8vnQMcHXoPUO+rDARSebSIKeFXPbuiMUn8Hepbb7FqG5Wn6o9uPTJ9MzKnE85Rl7CkCQmFYtc11hduOLRkFqILhJcdmZeDko7XNBQL4n0eg0GnJVU0StT0aZUUCSAWgDOsw+iPkgk=
   file: build/libs/*.jar
   on:
-    condition: $TRAVIS_TAG =~ ^v\d+\.\d+\.\d+(-\S*)?$
+    condition: "$TRAVIS_TAG =~ ^v\d+\.\d+\.\d+(-\S*)?$"
     tags: true
 - provider: script
   script: "./gradlew bintray"
   skip_cleanup: true
   on:
-    condition: $TRAVIS_TAG =~ ^v\d+\.\d+\.\d+(-\S*)?$
+    condition: "$TRAVIS_TAG =~ ^v\d+\.\d+\.\d+(-\S*)?$"
     tags: true

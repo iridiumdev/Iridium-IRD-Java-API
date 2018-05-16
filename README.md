@@ -8,12 +8,13 @@
 Java wrapper for the [Iridium Walletd JSON RPC API](https://wiki.ird.cash/iridium_walletd_rpc_call "Iridium Wiki").
 Method names are 100% compatible but there are some small differences in the signatures (see: [IridiumAPI.java](src/main/java/cash/ird/walletd/IridiumAPI.java)) to avoid signature clashes.
 All return types are unwrapped from any kind of envelope and can therefore be used straight away. 
-
+  
 ## Usage
 
+For `gradle` or `maven` dependency configuration please check the bintray maven repo:
+[![Bintray](https://img.shields.io/bintray/v/danielclasen/iridium/walletd.svg)](https://bintray.com/danielclasen/iridium/walletd/_latestVersion)
+
 ### Plain Java
-//todoc - gradle dependency \
-//todoc - maven dependency
 
 Create a new Instance of the [IridiumClient.java](src/main/java/cash/ird/walletd/IridiumClient.java):
 
