@@ -5,6 +5,10 @@ import nl.jqno.equalsverifier.EqualsVerifier
 
 class PrivateKeyTest extends BeanSpec<PrivateKey> {
 
+    def "testBean"() {
+        expect: checkBean()
+    }
+
     def "reqArgsConstructor"() {
         given:
         def value = "a1b2c3"

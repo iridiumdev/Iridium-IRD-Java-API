@@ -1,5 +1,6 @@
 package cash.ird.walletd
 
+import groovy.util.logging.Slf4j
 import nl.jqno.equalsverifier.EqualsVerifier
 import nl.jqno.equalsverifier.Warning
 import org.meanbean.test.BeanTester
@@ -7,19 +8,24 @@ import spock.lang.Specification
 
 import java.lang.reflect.ParameterizedType
 
+@Slf4j
 abstract class BeanSpec<T> extends Specification {
-
     Class<T> getBeanClass() {
         return (Class<T>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0]
     }
 
-    def "Check bean spec"() {
-        expect:
-        new BeanTester().testBean(getBeanClass())
+    def checkBean(){
+        return testBeanSpec() && testEqualsContract()
     }
 
-    def "Check equals contract"() {
-        given:
+    def testBeanSpec() {
+        log.info("Checking bean spec of $beanClass")
+        new BeanTester().testBean(getBeanClass())
+
+        return true
+    }
+
+    def testEqualsContract() {
         def equalsVerifier = EqualsVerifier
                 .forClass(getBeanClass())
                 .suppress(Warning.STRICT_INHERITANCE)
@@ -27,13 +33,14 @@ abstract class BeanSpec<T> extends Specification {
 
         customizeEqualsVerifier(equalsVerifier)
 
-        expect:
+        log.info("Checking equals contract of $beanClass")
         equalsVerifier.verify()
+
+        return true
     }
 
     @SuppressWarnings("GrMethodMayBeStatic")
     protected <T> EqualsVerifier<T> customizeEqualsVerifier(EqualsVerifier<T> equalsVerifier){
         return equalsVerifier
     }
-
 }

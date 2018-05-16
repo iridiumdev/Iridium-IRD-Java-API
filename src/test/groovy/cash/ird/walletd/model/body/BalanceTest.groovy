@@ -4,4 +4,8 @@ import cash.ird.walletd.BeanSpec
 
 class BalanceTest extends BeanSpec<Balance> {
 
+    def "testBean"() {
+        expect: checkBean()
+    }
+
 }

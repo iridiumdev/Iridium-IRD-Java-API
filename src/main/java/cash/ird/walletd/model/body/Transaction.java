@@ -1,7 +1,6 @@
 package cash.ird.walletd.model.body;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import lombok.Data;
 
 import java.util.List;

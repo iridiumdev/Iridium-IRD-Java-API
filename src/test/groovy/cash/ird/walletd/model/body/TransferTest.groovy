@@ -4,6 +4,10 @@ import cash.ird.walletd.BeanSpec
 
 class TransferTest extends BeanSpec<Transfer> {
 
+    def "testBean"() {
+        expect: checkBean()
+    }
+
     def "reqArgsConstructor"() {
         def address = "ir3abc..."
         when:

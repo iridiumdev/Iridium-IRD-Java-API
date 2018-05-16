@@ -5,6 +5,10 @@ import nl.jqno.equalsverifier.EqualsVerifier
 
 class BlockIndexRangeTest extends BeanSpec<BlockIndexRange> {
 
+    def "testBean"() {
+        expect: checkBean()
+    }
+
     def "static constructor"() {
         when:
         def a = BlockIndexRange.of(0, 1)

@@ -5,6 +5,10 @@ import nl.jqno.equalsverifier.EqualsVerifier
 
 class PublicKeyTest extends BeanSpec<PublicKey> {
 
+    def "testBean"() {
+        expect: checkBean()
+    }
+
     def "reqArgsConstructor"() {
         given:
         def value = "public123"

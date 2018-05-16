@@ -6,6 +6,10 @@ import nl.jqno.equalsverifier.EqualsVerifier
 
 class WalletdRequestTest extends BeanSpec<WalletdRequest> {
 
+    def "testBean"() {
+        expect: checkBean()
+    }
+
     def "reqArgsConstructor"() {
         def params = [foo: "bar"]
         def method = RequestMethod.GET_STATUS
