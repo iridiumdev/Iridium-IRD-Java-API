@@ -37,6 +37,8 @@ class IridiumClientTest extends Specification {
 
         waitForBalance(sut, wallet1, 1)
 //        waitForBalance(sut2, wallet2, 0)
+        waitForBlockHeightTotal(sut, 10)
+        waitForBlockHeightTotal(sut2, 10)
     }
 
     void cleanupSpec() {
@@ -449,7 +451,7 @@ class IridiumClientTest extends Specification {
 
     }
 
-    @RetryOnFailure(delaySeconds = 10, times = 29)
+    @RetryOnFailure(delaySeconds = 10, times = 9)
     def "Fusion.... HA!"() { //hehehe ;)
         given:
         waitForBalance(sut, wallet1, 505000)
@@ -488,15 +490,13 @@ class IridiumClientTest extends Specification {
         }
 
         when:
-        def estTotal = sut2.estimateFusion(5000000)
+        waitForBlockHeightIncrement(sut2, 1)
+        while (sut2.estimateFusion(5000000).fusionReadyCount < addresses.size()) {
+            log.info("Waiting for outputs to get ready to be fused...")
+            sleep(1000)
+        }
 
         and:
-        waitForBlockHeightIncrement(sut2, 1)
-
-        then:
-        estTotal.fusionReadyCount >= addresses.size()
-
-        when:
         def fTxHash = sut2.sendFusionTransaction(5000000, 2, wallet2)
         waitForTransactionConfirmation(sut2, fTxHash)
 
@@ -534,7 +534,15 @@ class IridiumClientTest extends Specification {
         def desiredHeight = api.getStatus().knownBlockCount + increment
         def currentHeight
         while ((currentHeight = api.getStatus().knownBlockCount) && currentHeight < desiredHeight) {
-            log.info("Waiting for blockHeight>$desiredHeight, currently blockHeight=$currentHeight...")
+            log.info("Waiting for blockHeight>$desiredHeight, current blockHeight=$currentHeight...")
+            sleep(1000)
+        }
+    }
+
+    private static void waitForBlockHeightTotal(IridiumAPI api, int desiredHeight) {
+        def currentHeight
+        while ((currentHeight = api.getStatus().knownBlockCount) && currentHeight < desiredHeight) {
+            log.info("Waiting for blockHeight>$desiredHeight, current blockHeight=$currentHeight...")
             sleep(1000)
         }
     }
