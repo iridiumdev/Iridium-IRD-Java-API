@@ -1,4 +1,4 @@
-group = 'cash.ird'
+group = 'cash.ird.walletd'
 archivesBaseName = 'walletd'
 description = 'Java wrapper for the Iridium Walletd json rpc API - see https://ird.cash'
 
@@ -80,6 +80,8 @@ ext {
     bintrayUser = System.env.BINTRAY_USER ?: null
     bintrayKey = System.env.BINTRAY_KEY ?: null
     bintrayPublish = System.env.BINTRAY_PUBLISH ?: false
+    bintrayOverride = System.env.BINTRAY_OVERRIDE ?: false
+    bintrayDry = System.env.BINTRAY_DRY ?: false
 }
 
 bintray {
@@ -87,8 +89,8 @@ bintray {
     key = bintrayKey
     publications = [archivesBaseName]
     publish = bintrayPublish
-
-    override = true
+    override = bintrayOverride
+    dryRun = bintrayDry
 
     pkg {
         repo = 'iridium'
