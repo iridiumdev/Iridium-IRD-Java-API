@@ -1,0 +1,108 @@
+group = 'cash.ird'
+archivesBaseName = 'walletd'
+description = 'Java wrapper for the Iridium Walletd json rpc API - see https://ird.cash'
+
+scmVersion {
+    tag {
+        prefix = 'v'
+        versionSeparator = ''
+    }
+}
+
+project.version = scmVersion.version
+
+if (System.env.TRAVIS_BUILD_NUMBER) {
+    project.version = "${project.version}-${System.env.TRAVIS_BUILD_NUMBER}"
+}
+
+task sourcesJar(type: Jar) {
+    from sourceSets.main.allSource
+    classifier 'sources'
+}
+
+task javadocJar(type: Jar) {
+    from javadoc
+    classifier 'javadoc'
+}
+
+task testsJar(type: Jar) {
+    from sourceSets.test.allSource
+    classifier 'tests'
+}
+
+publishing {
+    publications {
+        walletd(MavenPublication) {
+            from components.java
+            groupId group
+            artifactId archivesBaseName
+
+            pom {
+                withXml {
+                    def root = asNode()
+                    root.appendNode('name', archivesBaseName)
+                    root.appendNode('description', description)
+                    root.appendNode('url', 'https://ird.cash')
+
+
+                    def scm = root.appendNode('scm')
+                    scm.appendNode('url', 'https://github.com/danielclasen/iridium-java-api')
+                    scm.appendNode('connection', 'scm:git:git://github.com/danielclasen/iridium-java-api.git')
+                    scm.appendNode('developerConnection', 'scm:git:ssh://github.com:danielclasen/iridium-java-api.git')
+
+                    def issueManagement = root.appendNode('issueManagement')
+                    issueManagement.appendNode('system', 'GitHub Issues')
+                    issueManagement.appendNode('url', 'https://github.com/danielclasen/iridium-java-api/issues')
+
+                    def licenses = root.appendNode('licenses')
+                    def license = licenses.appendNode('license')
+                    license.appendNode('name', 'GNU General Public License v3.0')
+                    license.appendNode('url', 'https://www.gnu.org/licenses/gpl-3.0.txt')
+
+                    def developers = root.appendNode('developers')
+                    def developer = developers.appendNode('developer')
+                    developer.appendNode('name', 'Daniel Clasen')
+                    developer.appendNode('organizationUrl', 'https://github.com/danielclasen')
+
+                }
+            }
+
+            artifact sourcesJar
+
+            artifact javadocJar
+
+            artifact testsJar
+        }
+    }
+}
+
+ext {
+    bintrayUser = System.env.BINTRAY_USER ?: null
+    bintrayKey = System.env.BINTRAY_KEY ?: null
+    bintrayPublish = System.env.BINTRAY_PUBLISH ?: false
+}
+
+bintray {
+    user = bintrayUser
+    key = bintrayKey
+    publications = [archivesBaseName]
+    publish = bintrayPublish
+
+    override = true
+
+    pkg {
+        repo = 'iridium'
+        name = archivesBaseName
+
+        desc = description
+        websiteUrl = 'https://ird.cash'
+        issueTrackerUrl = 'https://github.com/danielclasen/iridium-java-api/issues'
+        vcsUrl = 'https://github.com/danielclasen/iridium-java-api'
+        licenses = ['GPL-3.0']
+
+        version {
+            name = project.version
+            licenses = ['GPL-3.0']
+        }
+    }
+}
