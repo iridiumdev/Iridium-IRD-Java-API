@@ -1,8 +1,11 @@
 package cash.ird.walletd.model.response;
 
-import cash.ird.walletd.rpc.WrappedWalletdResponse;
 import com.fasterxml.jackson.annotation.JsonSetter;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
+@Data
+@EqualsAndHashCode(callSuper = true)
 public class ViewKeyResponse extends WrappedWalletdResponse<ViewKeyResponse,String> {
 
     @JsonSetter("viewSecretKey")

@@ -1,11 +1,11 @@
-package cash.ird.walletd.rpc;
+package cash.ird.walletd.model.response;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class WalletdResponse<T> extends AbstractResponse<T,T>{
+public abstract class SimpleWalletdResponse<T> extends AbstractWalletdResponse<T,T> {
 
     @Override
     public T unwrap() {

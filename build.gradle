@@ -1,13 +1,14 @@
 plugins {
     id 'java-library'
     id 'groovy'
+    id 'jacoco'
 
     id 'io.franzbecker.gradle-lombok' version '1.14'
-}
 
-lombok { // optional: values below are the defaults
-    version = "1.16.20"
-    sha256 = "c5178b18caaa1a15e17b99ba5e4023d2de2ebc18b58cde0f5a04ca4b31c10e6d"
+    id 'pl.allegro.tech.build.axion-release' version '1.9.0'
+    id 'maven-publish'
+    id "com.jfrog.bintray" version "1.7.3"
+
 }
 
 dependencies {
@@ -23,10 +24,47 @@ dependencies {
     testImplementation 'org.codehaus.groovy:groovy-all:2.4.13'
     testImplementation 'org.spockframework:spock-core:1.0-groovy-2.4'
     testImplementation 'junit:junit:4.12'
+    testImplementation 'com.anotherchrisberry:spock-retry:0.6.3'
+    testImplementation 'org.meanbean:meanbean:2.0.3'
+    testImplementation 'nl.jqno.equalsverifier:equalsverifier:2.4.6'
 }
 
 
 repositories {
 
     jcenter()
+
+    maven {
+        url  "https://dl.bintray.com/anotherchrisberry/spock-retry"
+    }
 }
+
+sourceCompatibility = '1.8'
+targetCompatibility = '1.8'
+
+lombok { // optional: values below are the defaults
+    version = "1.16.20"
+    sha256 = "c5178b18caaa1a15e17b99ba5e4023d2de2ebc18b58cde0f5a04ca4b31c10e6d"
+}
+
+jacocoTestReport {
+    reports {
+        csv.enabled false
+
+        xml.enabled true
+        xml.destination file("${buildDir}/reports/jacoco/report.xml")
+
+        html.enabled true
+        html.destination file("${buildDir}/reports/jacoco/html")
+    }
+}
+
+test {
+    finalizedBy(jacocoTestReport)
+    testLogging {
+        events "passed", "skipped", "failed"
+        exceptionFormat "full"
+    }
+}
+
+apply from: "$projectDir/distribution.gradle"

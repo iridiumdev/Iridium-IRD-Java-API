@@ -1,0 +1,74 @@
+version: '3'
+services:
+
+  iridiumd1:
+    image: danielclasen/iridium-core
+    entrypoint: /iridium/iridiumd
+    command: ["--testnet", "--hide-my-port", "--data-dir", "/data", "--rpc-bind-ip", "0.0.0.0"]
+    volumes:
+      - ./src/test/resources/iridium/daemon1:/data
+
+
+  walletd-gen1:
+    image: danielclasen/iridium-walletd-gen
+    command: ["--testnet", "--data-dir", "/data", "-w", "/data/wallet", "-p", "password", "-g", "--daemon-address", "iridiumd1",]
+    volumes:
+      - ./src/test/resources/iridium/wallet1:/data
+    links:
+      - iridiumd1
+
+  walletd1:
+    image: danielclasen/iridium-core
+    entrypoint: /iridium/iridium_walletd
+    command: ["--testnet", "--data-dir", "/data", "-w", "/data/wallet", "-p", "password", "--daemon-address", "iridiumd1", "--log-level", "2"]
+    restart: on-failure
+    volumes:
+      - ./src/test/resources/iridium/wallet1:/data
+    links:
+      - walletd-gen1
+      - iridiumd1
+    ports:
+      - 14008:14007
+
+
+  miner1:
+    image: danielclasen/iridium-testminer
+    command: ["--daemon-host", "iridiumd1", "--threads", "1", "--log-level", "2"]
+    restart: on-failure
+    links:
+      - walletd1
+    volumes:
+      - ./src/test/resources/iridium/wallet1:/data
+
+  miner2:
+    image: danielclasen/iridium-testminer
+    command: ["--daemon-host", "iridiumd1", "--threads", "1", "--log-level", "2"]
+    restart: on-failure
+    links:
+      - walletd1
+    volumes:
+      - ./src/test/resources/iridium/wallet1:/data
+
+
+  walletd-gen2:
+    image: danielclasen/iridium-walletd-gen
+    command: ["--testnet", "--data-dir", "/data", "-w", "/data/wallet", "-p", "password", "-g", "--daemon-address", "iridiumd1",]
+    volumes:
+      - ./src/test/resources/iridium/wallet2:/data
+    links:
+      - iridiumd1
+
+  walletd2:
+    image: danielclasen/iridium-core
+    entrypoint: /iridium/iridium_walletd
+    command: ["--testnet", "--data-dir", "/data", "-w", "/data/wallet", "-p", "password", "--daemon-address", "iridiumd1", "--log-level", "2"]
+    restart: on-failure
+    volumes:
+      - ./src/test/resources/iridium/wallet2:/data
+    links:
+      - walletd-gen2
+      - iridiumd1
+    ports:
+      - 14009:14007
+
+
