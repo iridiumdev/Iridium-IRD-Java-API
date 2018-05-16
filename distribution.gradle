@@ -11,10 +11,6 @@ scmVersion {
 
 project.version = scmVersion.version
 
-if (System.env.TRAVIS_BUILD_NUMBER) {
-    project.version = "${project.version}-${System.env.TRAVIS_BUILD_NUMBER}"
-}
-
 task sourcesJar(type: Jar) {
     from sourceSets.main.allSource
     classifier 'sources'
