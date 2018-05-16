@@ -384,6 +384,7 @@ class IridiumClientTest extends Specification {
 
     }
 
+    @RetryOnFailure(delaySeconds = 10, times = 29)
     def "Delayed Transactions"() {
         given:
         waitForBalance(sut, wallet1, 205000)
@@ -448,6 +449,7 @@ class IridiumClientTest extends Specification {
 
     }
 
+    @RetryOnFailure(delaySeconds = 10, times = 29)
     def "Fusion.... HA!"() { //hehehe ;)
         given:
         waitForBalance(sut, wallet1, 505000)
