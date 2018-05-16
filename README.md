@@ -2,6 +2,8 @@
 
 [![Build Status](https://travis-ci.org/danielclasen/iridium-java-api.svg?branch=master)](https://travis-ci.org/danielclasen/iridium-java-api)
 [![codecov](https://codecov.io/gh/danielclasen/iridium-java-api/branch/master/graph/badge.svg)](https://codecov.io/gh/danielclasen/iridium-java-api)
+[![Bintray](https://img.shields.io/bintray/v/danielclasen/iridium/walletd.svg)](https://bintray.com/danielclasen/iridium/walletd/_latestVersion)
+
 
 Java wrapper for the [Iridium Walletd JSON RPC API](https://wiki.ird.cash/iridium_walletd_rpc_call "Iridium Wiki").
 Method names are 100% compatible but there are some small differences in the signatures (see: [IridiumAPI.java](src/main/java/cash/ird/walletd/IridiumAPI.java)) to avoid signature clashes.
