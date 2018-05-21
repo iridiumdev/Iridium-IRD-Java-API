@@ -81,7 +81,7 @@ public interface IridiumAPI {
     String createAddress() throws IridiumWalletdException;
 
     /**
-     * Create a new address on the current wallet container with either a {@link cash.ird.walletd.model.request.PrivateKey} or {@link cash.ird.walletd.model.request.PublicKey}
+     * Imports an existing address on the current wallet container with either a {@link cash.ird.walletd.model.request.PrivateKey} or {@link cash.ird.walletd.model.request.PublicKey}
      *
      * @return the new address
      * @throws IridiumWalletdException in case of an RPC Error

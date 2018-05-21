@@ -33,12 +33,14 @@ class IridiumClientTest extends Specification {
         wallet1 = getClass().getResource("/iridium/wallet1/wallet.adr").readLines().first()
 
         sut2 = new IridiumClient("localhost", 14009)
-        wallet2 = getClass().getResource("/iridium/wallet2/wallet.adr").readLines().first()
 
         waitForBalance(sut, wallet1, 1)
-//        waitForBalance(sut2, wallet2, 0)
         waitForBlockHeightTotal(sut, 10)
         waitForBlockHeightTotal(sut2, 10)
+    }
+
+    void setup() {
+        wallet2 = sut2.createAddress()
     }
 
     void cleanupSpec() {
@@ -139,6 +141,7 @@ class IridiumClientTest extends Specification {
         address != null
     }
 
+    @Ignore("ignored until we figure out how that is working in the core")
     def "CreateAddress with publicKey"() {
         when:
         String address = sut.createAddress(PublicKey.of("test123"))
@@ -147,12 +150,25 @@ class IridiumClientTest extends Specification {
         address != null
     }
 
-    def "CreateAddress with privateKey"() {
+    def "Import wallet from viewSecretKey and spendSecretKey"() {
+        given:
+        def testAddress = sut.createAddress()
+        def keyPair = sut.getSpendKeys(testAddress)
+        def viewKey = sut.getViewKey()
+
+
         when:
-        String address = sut.createAddress(PrivateKey.of("secr3t"))
+        sut2.reset(viewKey)
+        String address = sut2.createAddress(PrivateKey.of(keyPair.getSecretKey()))
 
         then:
-        address != null
+        address == testAddress
+
+        when:
+        def addresses = sut2.getAddresses()
+
+        then:
+        addresses.size() == 1
     }
 
     def "DeleteAddress"() {

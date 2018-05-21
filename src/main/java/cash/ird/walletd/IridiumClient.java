@@ -87,9 +87,9 @@ public class IridiumClient implements IridiumAPI {
         if (key != null) {
             Map<String, Object> params = buildParams();
             if (key.isPrivate()) {
-                params.put("secretSpendKey", key.getValue());
+                params.put("spendSecretKey", key.getValue());
             } else {
-                params.put("publicSpendKey", key.getValue());
+                params.put("spendPublicKey", key.getValue());
             }
 
             return this.walletdClient.doRequest(RequestMethod.CREATE_ADDRESS, Collections.unmodifiableMap(params), AddressResponse.class);
