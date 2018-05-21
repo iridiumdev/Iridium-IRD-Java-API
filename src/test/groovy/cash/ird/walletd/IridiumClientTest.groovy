@@ -41,6 +41,9 @@ class IridiumClientTest extends Specification {
 
     void setup() {
         wallet2 = sut2.createAddress()
+
+        def status = sut.getStatus()
+        waitForBlockHeightTotal(sut2, status.getBlockCount().toInteger())
     }
 
     void cleanupSpec() {
@@ -536,14 +539,14 @@ class IridiumClientTest extends Specification {
     private static void waitForBalance(IridiumAPI api, String address, long threshold) {
         while (api.getBalance(address).availableBalance < threshold) {
             log.info("Waiting for valid balance >=$threshold on wallet $address...")
-            sleep(1000)
+            sleep(5000)
         }
     }
 
     private static void waitForTransactionConfirmation(IridiumAPI api, String transactionHash) {
         while (api.getUnconfirmedTransactionHashes().contains(transactionHash)) {
             log.info("Waiting for tx $transactionHash to get confirmed...")
-            sleep(1000)
+            sleep(5000)
         }
     }
 
@@ -552,7 +555,7 @@ class IridiumClientTest extends Specification {
         def currentHeight
         while ((currentHeight = api.getStatus().knownBlockCount) && currentHeight < desiredHeight) {
             log.info("Waiting for blockHeight>$desiredHeight, current blockHeight=$currentHeight...")
-            sleep(1000)
+            sleep(5000)
         }
     }
 
@@ -560,7 +563,7 @@ class IridiumClientTest extends Specification {
         def currentHeight
         while ((currentHeight = api.getStatus().knownBlockCount) && currentHeight < desiredHeight) {
             log.info("Waiting for blockHeight>$desiredHeight, current blockHeight=$currentHeight...")
-            sleep(1000)
+            sleep(5000)
         }
     }
 
