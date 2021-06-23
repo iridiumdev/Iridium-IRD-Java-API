@@ -6,6 +6,7 @@ import cash.ird.walletd.model.request.BlockIndexRange;
 import cash.ird.walletd.model.request.BlockRange;
 import cash.ird.walletd.model.request.Key;
 import cash.ird.walletd.model.response.*;
+import cash.ird.walletd.rpc.HttpClient;
 import cash.ird.walletd.rpc.WalletdClient;
 import cash.ird.walletd.rpc.exception.IridiumWalletdException;
 import cash.ird.walletd.rpc.method.RequestMethod;
@@ -31,6 +32,10 @@ public class IridiumClient implements IridiumAPI {
 
     public IridiumClient(String url) {
         this.walletdClient = new WalletdClient(url);
+    }
+
+    public IridiumClient(String url, HttpClient httpClient) {
+        this.walletdClient = new WalletdClient(url, httpClient);
     }
 
     @Override
@@ -87,9 +92,9 @@ public class IridiumClient implements IridiumAPI {
         if (key != null) {
             Map<String, Object> params = buildParams();
             if (key.isPrivate()) {
-                params.put("secretSpendKey", key.getValue());
+                params.put("spendSecretKey", key.getValue());
             } else {
-                params.put("publicSpendKey", key.getValue());
+                params.put("spendPublicKey", key.getValue());
             }
 
             return this.walletdClient.doRequest(RequestMethod.CREATE_ADDRESS, Collections.unmodifiableMap(params), AddressResponse.class);
